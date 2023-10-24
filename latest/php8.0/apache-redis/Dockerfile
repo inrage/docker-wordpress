@@ -144,7 +144,5 @@ RUN set -eux; \
 VOLUME /var/www/html
 
 COPY wp-config-docker.php /usr/src/wordpress/
-COPY docker-entrypoint.sh /usr/local/bin/
 
-ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["apache2-foreground"]
