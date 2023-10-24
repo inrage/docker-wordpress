@@ -34,8 +34,12 @@ for ver in $versions; do
         docker_tag="${BASE_DOCKER_TAG}:${version}-${docker_tag_variant}"
       fi
 
+      # Construct the name
+      name="${version}-${variant}"
+
       # Append to the JSON string
-      matrix_json+=" {\"dockerfile\": \"${dockerfile_path}\", \"tag\": \"${docker_tag}\"},"
+      matrix_json+=" {\"dockerfile\": \"${dockerfile_path}\", \"tag\": \"${docker_tag}\", \"name\": \"${name}\"},"
+
     done
   done
 done

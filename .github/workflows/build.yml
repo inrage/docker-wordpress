@@ -25,7 +25,7 @@ jobs:
           echo "strategy=$strategy" >> "$GITHUB_OUTPUT"
           jq . <<<"$strategy" # sanity check / debugging aid
   build:
-    name: ${{ matrix.tag }}
+    name: ${{ matrix.name }}
     needs: generate-jobs
     runs-on: ubuntu-latest
     strategy:
