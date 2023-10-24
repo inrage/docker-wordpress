@@ -139,7 +139,6 @@ RUN set -eux; \
 
 WORKDIR /var/www/html
 
-COPY wp-config-docker.php /usr/src/wordpress/
-RUN chown www-data:www-data /usr/src/wordpress/wp-config-docker.php
+COPY --chown=www-data wp-config-docker.php /usr/src/wordpress/
 
 CMD ["apache2-foreground"]
