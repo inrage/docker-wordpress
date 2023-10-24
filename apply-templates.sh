@@ -52,7 +52,7 @@ for version; do
               gawk -f "$jqt" Dockerfile.template
             } > "$dir/Dockerfile"
 
-            cp -a docker-entrypoint.sh wp-config-docker.php php-custom.ini "$dir/"
+            cp -a wp-config-docker.php php-custom.ini "$dir/"
       done
   done
 

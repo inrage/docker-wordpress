@@ -141,7 +141,7 @@ RUN set -eux; \
       echo 'port 25'; \
     } > /etc/msmtprc
 
-VOLUME /var/www/html
+WORKDIR /var/www/html
 
 COPY wp-config-docker.php /usr/src/wordpress/
 
