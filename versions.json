@@ -1,0 +1,12 @@
+{
+  "latest": {
+    "phpVersions": [
+      "7.4",
+      "8.0"
+    ],
+    "variants": [
+      "apache",
+      "apache-redis"
+    ]
+  }
+}
