@@ -20,40 +20,31 @@ generated_warning() {
 	EOH
 }
 
-if [ "$#" -eq 0 ]; then
-	versions="$(jq -r 'keys | map(@sh) | join(" ")' versions.json)"
-	eval "set -- $versions"
-fi
+version="latest"
+export version
 
-for version; do
-	export version
+phpVersions="$(jq -r '.[env.version].phpVersions | map(@sh) | join(" ")' versions.json)"
+eval "phpVersions=( $phpVersions )"
 
-	rm -rf "${version:?}/"
+variants="$(jq -r '.[env.version].variants | map(@sh) | join(" ")' versions.json)"
+eval "variants=( $variants )"
 
-  phpVersions="$(jq -r '.[env.version].phpVersions | map(@sh) | join(" ")' versions.json)"
-  eval "phpVersions=( $phpVersions )"
+for phpVersion in "${phpVersions[@]}"; do
+    export phpVersion
 
-  variants="$(jq -r '.[env.version].variants | map(@sh) | join(" ")' versions.json)"
-  eval "variants=( $variants )"
+    for variant in "${variants[@]}"; do
+        export variant
 
-  for phpVersion in "${phpVersions[@]}"; do
-  		export phpVersion
+        dir="$version/php$phpVersion/$variant"
+        mkdir -p "$dir"
 
-  		for variant in "${variants[@]}"; do
-      			export variant
+        echo "processing $dir ..."
 
-            dir="$version/php$phpVersion/$variant"
-            mkdir -p "$dir"
+        {
+          generated_warning
+          gawk -f "$jqt" Dockerfile.template
+        } > "$dir/Dockerfile"
 
-            echo "processing $dir ..."
-
-            {
-              generated_warning
-              gawk -f "$jqt" Dockerfile.template
-            } > "$dir/Dockerfile"
-
-            cp -a wp-config-docker.php php-custom.ini "$dir/"
-      done
-  done
-
+        cp -a wp-config-docker.php php-custom.ini "$dir/"
+    done
 done
