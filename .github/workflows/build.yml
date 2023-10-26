@@ -50,4 +50,6 @@ jobs:
           file: ${{ matrix.dockerfile }}
           tags: ${{ matrix.tag }}
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
