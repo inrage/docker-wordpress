@@ -1,3 +1,5 @@
+FROM wordpress:cli-php{{ env.phpVersion }} AS wp-cli
+
 FROM php:{{ env.phpVersion }}-apache
 
 RUN set -eux; \
@@ -138,6 +140,9 @@ RUN set -eux; \
       echo 'host relay.mailhub'; \
       echo 'port 25'; \
     } > /etc/msmtprc
+
+# install WP-CLI
+COPY --from=wp-cli /usr/local/bin/wp /usr/local/bin/wp
 
 WORKDIR /var/www/html
 
