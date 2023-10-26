@@ -14,7 +14,6 @@ RUN set -eux; \
     # Ghostscript is required for rendering PDF previews
 	ghostscript \
 	less \
-	bash \
 	mariadb-client \
     msmtp \
     msmtp-mta \
@@ -50,6 +49,8 @@ RUN set -ex; \
 		mysqli \
 		zip \
 		soap \
+		pdo \
+		pdo_mysql \
 	; \
     # https://pecl.php.net/package/imagick
 	pecl install imagick-3.6.0; \
