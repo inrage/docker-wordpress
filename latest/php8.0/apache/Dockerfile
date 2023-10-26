@@ -13,6 +13,8 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
     # Ghostscript is required for rendering PDF previews
 	ghostscript \
+	less \
+	bash \
 	mariadb-client \
     msmtp \
     msmtp-mta \
