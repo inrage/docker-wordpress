@@ -29,7 +29,6 @@ RUN set -ex; \
 		libwebp-dev \
 		libzip-dev \
 		mariadb-client \
-		# For MSMTP
 		msmtp \
 		msmtp-mta \
 	; \
