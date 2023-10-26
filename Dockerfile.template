@@ -146,6 +146,9 @@ COPY --from=wp-cli /usr/local/bin/wp /usr/local/bin/wp
 
 WORKDIR /var/www/html
 
+RUN set -eux; \
+    chmod 755 /var/www/html;
+
 COPY --chown=www-data wp-config-docker.php /usr/src/wordpress/
 
 CMD ["apache2-foreground"]

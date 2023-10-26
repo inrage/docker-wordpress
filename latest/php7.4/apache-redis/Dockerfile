@@ -4,6 +4,8 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
+FROM wordpress:cli-php7.4 AS wp-cli
+
 FROM php:7.4-apache
 
 RUN set -eux; \
@@ -143,7 +145,13 @@ RUN set -eux; \
       echo 'port 25'; \
     } > /etc/msmtprc
 
+# install WP-CLI
+COPY --from=wp-cli /usr/local/bin/wp /usr/local/bin/wp
+
 WORKDIR /var/www/html
+
+RUN set -eux; \
+    chmod 755 /var/www/html;
 
 COPY --chown=www-data wp-config-docker.php /usr/src/wordpress/
 
