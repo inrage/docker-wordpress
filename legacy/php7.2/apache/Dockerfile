@@ -5,6 +5,9 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
     # Ghostscript is required for rendering PDF previews
 	ghostscript \
+    mariadb-client \
+    msmtp \
+    msmtp-mta \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
@@ -22,10 +25,6 @@ RUN set -ex; \
 		libpng-dev \
 		libwebp-dev \
 		libzip-dev \
-		mariadb-client \
-		# For MSMTP
-		msmtp \
-		msmtp-mta \
 	; \
 	\
 	docker-php-ext-configure gd \
