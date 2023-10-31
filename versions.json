@@ -1,6 +1,7 @@
 {
   "legacy": {
     "phpVersions": [
+      "7.0",
       "7.2"
     ],
     "variants": [
