@@ -77,6 +77,9 @@ RUN set -ex; \
 # use production php.ini
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
+# apply custom PHP configuration
+COPY php-custom.ini "$PHP_INI_DIR/conf.d/zzz-custom-php.ini"
+
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN set -eux; \
