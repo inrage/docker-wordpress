@@ -1,5 +1,5 @@
-FROM wordpress:cli-php7.0 AS wp-cli
-FROM wordpress:php7.0-apache
+FROM wordpress:cli-php5.6 AS wp-cli
+FROM wordpress:php5.6-apache
 
 WORKDIR /var/www/html
 
