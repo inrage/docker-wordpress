@@ -19,5 +19,13 @@
       "apache",
       "apache-redis"
     ]
+  },
+  "beta": {
+    "phpVersions": [
+      "7.4"
+    ],
+    "variants": [
+      "apache"
+    ]
   }
 }
