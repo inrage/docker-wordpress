@@ -172,7 +172,6 @@ RUN set -xe; \
 # install WP-CLI
 COPY --from=wp-cli /usr/local/bin/wp /usr/local/bin/wp
 
-USER inr
 
 RUN set -eux; \
     chmod 755 /var/www/html;
@@ -182,6 +181,7 @@ RUN ls -la
 COPY --chown=inr wp-config-docker.php /usr/src/wordpress/
 COPY bin /usr/local/bin
 
+USER inr
 WORKDIR /var/www/html
 
 CMD ["apache2-foreground"]
