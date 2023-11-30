@@ -177,6 +177,8 @@ USER inr
 RUN set -eux; \
     chmod 755 /var/www/html;
 
+RUN ls -la
+
 COPY --chown=inr wp-config-docker.php /usr/src/wordpress/
 COPY ./bin /usr/local/bin
 

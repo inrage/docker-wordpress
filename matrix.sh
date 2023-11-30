@@ -43,7 +43,7 @@ for ver in $versions; do
       fi
 
       # Construct the name
-      name="${version}-${variant}"
+      name="${ver}-${version}-${variant}"
 
       # Append to the JSON string
       matrix_json+=" {\"dockerfile\": \"${dockerfile_path}\", \"tag\": \"${docker_tag}\", \"name\": \"${name}\"},"
