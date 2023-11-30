@@ -173,12 +173,13 @@ RUN set -xe; \
 COPY --from=wp-cli /usr/local/bin/wp /usr/local/bin/wp
 
 USER inr
-WORKDIR /var/www/html
 
 RUN set -eux; \
     chmod 755 /var/www/html;
 
 COPY --chown=inr wp-config-docker.php /usr/src/wordpress/
-COPY bin /usr/local/bin
+COPY ./bin /usr/local/bin
+
+WORKDIR /var/www/html
 
 CMD ["apache2-foreground"]

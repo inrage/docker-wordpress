@@ -28,10 +28,18 @@ for ver in $versions; do
 
       # Construct the Docker tag
       if [[ $variant == "apache" ]]; then
-        docker_tag="${BASE_DOCKER_TAG}:${version}"
+        if [[ $ver == "beta" ]]; then
+          docker_tag="${BASE_DOCKER_TAG}:beta-${version}"
+        else
+          docker_tag="${BASE_DOCKER_TAG}:${version}"
+        fi
       else
-        docker_tag_variant=${variant#apache-}  # Remove the "apache-" prefix if it exists
-        docker_tag="${BASE_DOCKER_TAG}:${version}-${docker_tag_variant}"
+        docker_tag_variant=${variant#apache-}
+        if [[ $ver == "beta" ]]; then
+          docker_tag="${BASE_DOCKER_TAG}:beta-${version}-${docker_tag_variant}"
+        else
+          docker_tag="${BASE_DOCKER_TAG}:${version}-${docker_tag_variant}"
+        fi
       fi
 
       # Construct the name
