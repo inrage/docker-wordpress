@@ -24,7 +24,7 @@ for ver in $versions; do
     # For each variant...
     for variant in $variants; do
       # Build the Dockerfile path
-      dockerfile_path="${ver}/php${version}/${variant}/Dockerfile"
+      dockerfile_path="${ver}/php${version}/${variant}"
 
       # Construct the Docker tag
       if [[ $variant == "apache" ]]; then
@@ -46,7 +46,7 @@ for ver in $versions; do
       name="${ver}-${version}-${variant}"
 
       # Append to the JSON string
-      matrix_json+=" {\"dockerfile\": \"${dockerfile_path}\", \"tag\": \"${docker_tag}\", \"name\": \"${name}\"},"
+      matrix_json+=" {\"context\": \"${dockerfile_path}\", \"tag\": \"${docker_tag}\", \"name\": \"${name}\"},"
 
     done
   done

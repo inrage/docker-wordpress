@@ -180,7 +180,7 @@ RUN set -eux; \
 RUN ls -la
 
 COPY --chown=inr wp-config-docker.php /usr/src/wordpress/
-COPY ./bin /usr/local/bin
+COPY bin /usr/local/bin
 
 WORKDIR /var/www/html
 
