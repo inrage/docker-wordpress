@@ -144,18 +144,47 @@ RUN echo "sendmail_path=/usr/bin/msmtp -t --read-envelope-from" > /usr/local/etc
 RUN set -eux; \
     { \
       echo 'account default'; \
-      echo 'host relay.mailhub'; \
-      echo 'port 25'; \
+      echo 'host ${INR_SMTP_HOST:-relay.mailhub}'; \
+      echo 'port ${INR_SMTP_PORT:-25}'; \
     } > /etc/msmtprc
+
+ARG INRAGE_USER_ID=1000
+ARG INRAGE_GROUP_ID=1000
+
+RUN set -xe; \
+  groupadd -g $INRAGE_GROUP_ID inr; \
+  useradd -u $INRAGE_USER_ID -g $INRAGE_GROUP_ID -m -s /bin/bash -g inr inr; \
+  adduser inr www-data; \
+  sed -i '/^inr/s/!/*/' /etc/shadow;
+
+RUN set -xe; \
+   {\
+        echo 'export PS1="\[\e[1;34m\]\u\[\e[0m\]\[\e[0;36m\]@\[\e[0;33m\]${INR_APP_NAME:-php-apache}\[\e[0;35m\].${INR_ENVIRONMENT_NAME:-prod}\[\e[0m\]:\w $ "'; \
+        # Make sure PATH is the same for ssh sessions.
+        echo "export PATH=${PATH}"; \
+        echo "alias l='ls -lah'"; \
+        echo "alias ls='ls -F --color'"; \
+        echo "alias ll='ls -lF --color'"; \
+        echo "alias l='ls -lhaF --color'"; \
+        echo "alias l.='ls -daF --color .*'"; \
+    } | tee /home/inr/.shrc; \
+    \
+    cp /home/inr/.shrc /home/inr/.bashrc; \
+    cp /home/inr/.shrc /home/inr/.bash_profile;
 
 # install WP-CLI
 COPY --from=wp-cli /usr/local/bin/wp /usr/local/bin/wp
 
-WORKDIR /var/www/html
 
 RUN set -eux; \
     chmod 755 /var/www/html;
 
-COPY --chown=www-data wp-config-docker.php /usr/src/wordpress/
+RUN ls -la
+
+COPY --chown=inr wp-config-docker.php /usr/src/wordpress/
+COPY bin /usr/local/bin
+
+USER inr
+WORKDIR /var/www/html
 
 CMD ["apache2-foreground"]
