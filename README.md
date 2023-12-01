@@ -70,14 +70,14 @@ services:
         - traefik.enable=true
         - traefik.docker.network=traefik-public
         - traefik.constraint-label=traefik-public
-        - traefik.http.routers.${ALIAS}-http.rule=Host(`www.inrage.fr`, `inrage.fr`)
-        - traefik.http.routers.${ALIAS}-http.entrypoints=http
-        - traefik.http.routers.${ALIAS}-http.middlewares=https-redirect
-        - traefik.http.routers.${ALIAS}-https.rule=Host(`www.inrage.fr`, `inrage.fr`)
-        - traefik.http.routers.${ALIAS}-https.entrypoints=https
-        - traefik.http.routers.${ALIAS}-https.tls=true
-        - traefik.http.routers.${ALIAS}-https.tls.certresolver=le
-        - traefik.http.services.${ALIAS}.loadbalancer.server.port=80
+        - traefik.http.routers.mywebsite-http.rule=Host(`www.inrage.fr`, `inrage.fr`)
+        - traefik.http.routers.mywebsite-http.entrypoints=http
+        - traefik.http.routers.mywebsite-http.middlewares=https-redirect
+        - traefik.http.routers.mywebsite-https.rule=Host(`www.inrage.fr`, `inrage.fr`)
+        - traefik.http.routers.mywebsite-https.entrypoints=https
+        - traefik.http.routers.mywebsite-https.tls=true
+        - traefik.http.routers.mywebsite-https.tls.certresolver=le
+        - traefik.http.services.mywebsite.loadbalancer.server.port=80
 
 volumes:
   redis_data:
@@ -118,3 +118,9 @@ WORDPRESS_CONFIG_EXTRA: |
 ### Running User
 - `INRAGE_USER_ID`: UID of the user to run the application as (default: 1000)
 - `INRAGE_GROUP_ID`: GID of the user to run the application as (default: 1000)
+
+## Daily Usage
+
+- [WordPress - Roots Sage 9](/docs/roots-sage9.md)
+- [WordPress - Roots Sage 10](/docs/roots-sage10.md)
+
