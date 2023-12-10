@@ -141,8 +141,8 @@ RUN echo "sendmail_path=/usr/bin/msmtp -t --read-envelope-from" > /usr/local/etc
 RUN set -eux; \
     { \
       echo 'account default'; \
-      echo 'host ${INR_SMTP_HOST:-relay.mailhub}'; \
-      echo 'port ${INR_SMTP_PORT:-25}'; \
+      echo 'host relay.mailhub'; \
+      echo 'port 25'; \
     } > /etc/msmtprc
 
 ARG INRAGE_USER_ID=1000
