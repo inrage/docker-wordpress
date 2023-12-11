@@ -141,11 +141,17 @@ RUN set -eux; \
 
 RUN echo "sendmail_path=/usr/bin/msmtp -t --read-envelope-from" > /usr/local/etc/php/conf.d/php-sendmail.ini
 
+ARG INR_SMTP_HOST=relay.mailhub
+ARG INR_SMTP_PORT=25
+
+ENV INR_SMTP_HOST=$INR_SMTP_HOST
+ENV INR_SMTP_PORT=$INR_SMTP_PORT
+
 RUN set -eux; \
     { \
       echo 'account default'; \
-      echo 'host relay.mailhub'; \
-      echo 'port 25'; \
+      echo "host $INR_SMTP_HOST"; \
+      echo "port $INR_SMTP_PORT"; \
     } > /etc/msmtprc
 
 ARG INRAGE_USER_ID=1000
