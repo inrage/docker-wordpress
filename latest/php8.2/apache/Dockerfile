@@ -180,7 +180,8 @@ COPY --from=wp-cli /usr/local/bin/wp /usr/local/bin/wp
 
 
 RUN set -eux; \
-    chmod 755 /var/www/html;
+    chmod 755 /var/www/html; \
+    chown ${INRAGE_USER_ID}:${INRAGE_GROUP_ID} /var/www/html;
 
 RUN ls -la
 
