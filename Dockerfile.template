@@ -8,5 +8,9 @@ COPY --from=wp-cli /usr/local/bin/wp /usr/local/bin/wp
 COPY --chown=inr wp-config-docker.php /usr/src/wordpress/
 COPY bin /usr/local/bin
 
+USER root
+
 COPY crontab /etc/crontab
 RUN chmod 0644 /etc/crontab
+
+USER inr
