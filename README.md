@@ -119,6 +119,10 @@ WORDPRESS_CONFIG_EXTRA: |
 - `INRAGE_USER_ID`: UID of the user to run the application as (default: 1000)
 - `INRAGE_GROUP_ID`: GID of the user to run the application as (default: 1000)
 
+### CRONTAB
+- `CRON_SCHEDULE`: Cron schedule (default: * * * * *)
+- `CRON_WP_BASEPATH`: WordPress base path (default: /var/www/html)
+
 ## Daily Usage
 
 - [WordPress - Roots Sage 9](/docs/roots-sage9.md)

@@ -13,3 +13,5 @@ COPY --from=wp-cli /usr/local/bin/wp /usr/local/bin/wp
 
 COPY --chown=inr wp-config-docker.php /usr/src/wordpress/
 COPY bin /usr/local/bin
+
+COPY crontab /etc/cron.d/wordpress-cron

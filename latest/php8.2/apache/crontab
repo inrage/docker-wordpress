@@ -1,0 +1,7 @@
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+BASH_ENV=/etc/environment
+MAILTO=""
+
+${CRON_SCHEDULE:-* * * * *} root /usr/local/bin/wp --allow-root cron event run --due-now --path=${CRON_WP_BASEPATH:-/var/www/html}  >/proc/1/fd/1 2>/proc/1/fd/2
+
