@@ -4,19 +4,28 @@
 # PLEASE DO NOT EDIT IT DIRECTLY.
 #
 
-FROM wordpress:cli-php8.1 AS wp-cli
-
 FROM inrage/docker-php:8.1
-
-# install WP-CLI
-COPY --from=wp-cli /usr/local/bin/wp /usr/local/bin/wp
-
 
 USER root
 
 RUN set -eux; \
     pecl install redis; \
     docker-php-ext-enable redis;
+
+RUN set -ex; \
+    \
+    cd /tmp; \
+    wp_cli_version="2.11.0"; \
+    url="https://github.com/wp-cli/wp-cli/releases/download/v${wp_cli_version}/wp-cli-${wp_cli_version}.phar"; \
+    curl -o wp.phar -fSL "${url}"; \
+    chmod +x wp.phar; \
+    mv wp.phar /usr/local/bin/wp; \
+    \
+    url="https://raw.githubusercontent.com/wp-cli/wp-cli/v${wp_cli_version}/utils/wp-completion.bash"; \
+    curl -o /usr/local/include/wp-completion.bash -fSL "${url}"; \
+    chmod +x /usr/local/include/wp-completion.bash; \
+    cd /home/inr; \
+    echo "source /usr/local/include/wp-completion.bash" | tee -a .bash_profile .bashrc;
 
 USER inr
 

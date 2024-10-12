@@ -2,8 +2,6 @@
 
 set -e
 
-
-# Check if the wp acorn command is available
 if wp acorn &> /dev/null; then
     echo "wp acorn command is available"
 
@@ -19,3 +17,5 @@ if wp acorn &> /dev/null; then
 else
     echo "project is not using Acorn or Acorn is not installed... skipping Acorn commands."
 fi
+
+wp cache flush
