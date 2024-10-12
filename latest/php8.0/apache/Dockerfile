@@ -16,6 +16,7 @@ COPY bin /usr/local/bin
 
 USER root
 
+
 COPY crontab /etc/crontab
 RUN chmod 0644 /etc/crontab
 

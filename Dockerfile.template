@@ -10,6 +10,12 @@ COPY bin /usr/local/bin
 
 USER root
 
+{{ if env.variant == "apache-redis" then ( -}}
+RUN set -eux; \
+    pecl install redis; \
+    docker-php-ext-enable redis;
+{{ ) else "" end -}}
+
 COPY crontab /etc/crontab
 RUN chmod 0644 /etc/crontab
 

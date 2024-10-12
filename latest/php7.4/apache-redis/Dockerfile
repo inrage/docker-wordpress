@@ -16,6 +16,10 @@ COPY bin /usr/local/bin
 
 USER root
 
+RUN set -eux; \
+    pecl install redis; \
+    docker-php-ext-enable redis;
+
 COPY crontab /etc/crontab
 RUN chmod 0644 /etc/crontab
 
