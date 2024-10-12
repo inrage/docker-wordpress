@@ -18,4 +18,15 @@ else
     echo "project is not using Acorn or Acorn is not installed... skipping Acorn commands."
 fi
 
-wp cache flush
+if wp cache &> /dev/null; then
+    echo "wp cache command is available"
+
+    # Run wp cache flush command
+    echo "Flushing cache..."
+    if ! wp cache flush; then
+        echo "Failed to flush cache" >&2
+        exit 1
+    fi
+else
+    echo "project is not using cache or cache is not installed... skipping cache commands."
+fi
