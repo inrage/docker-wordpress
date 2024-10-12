@@ -45,8 +45,8 @@ for phpVersion in "${phpVersions[@]}"; do
           gawk -f "$jqt" Dockerfile.template
         } > "$dir/Dockerfile"
 
-        cp -a wp-config-docker.php php-custom.ini "$dir/"
         cp -a bin "$dir/"
-        cp -a crontab "$dir/"
+        cp -a templates "$dir/"
+        cp -a init "$dir/"
     done
 done

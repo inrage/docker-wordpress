@@ -11,13 +11,13 @@ FROM inrage/docker-php:8.3
 # install WP-CLI
 COPY --from=wp-cli /usr/local/bin/wp /usr/local/bin/wp
 
-COPY --chown=inr wp-config-docker.php /usr/src/wordpress/
-COPY bin /usr/local/bin
 
 USER root
 
 
-COPY crontab /etc/crontab
-RUN chmod 0644 /etc/crontab
-
 USER inr
+
+COPY templates /etc/gotpl/
+COPY bin /usr/local/bin
+
+COPY init /docker-entrypoint-init.d/
