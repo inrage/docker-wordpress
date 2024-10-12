@@ -17,3 +17,5 @@ if wp acorn &> /dev/null; then
 else
     echo "project is not using Acorn or Acorn is not installed... skipping Acorn commands."
 fi
+
+wp cache flush
