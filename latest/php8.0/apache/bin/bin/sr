@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-
-set -e
-
-source=$1
-target=$2
-
-/usr/local/bin/wp search-replace "${source}" "${target}" --format=count --all-tables --precise --skip-columns=guid

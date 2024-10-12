@@ -46,7 +46,7 @@ for phpVersion in "${phpVersions[@]}"; do
         } > "$dir/Dockerfile"
 
         cp -a wp-config-docker.php php-custom.ini "$dir/"
-        cp -a bin "$dir/bin"
+        cp -a bin "$dir/"
         cp -a crontab "$dir/"
     done
 done
