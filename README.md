@@ -1,8 +1,9 @@
-The provided Docker image allows you to deploy WordPress in production with a powerful configuration, an integrated SMTP relay, and support for PHP Redis.
+The provided Docker image allows you to deploy your WordPress website in production with a powerful configuration, an integrated SMTP relay, and support for PHP Redis.
 
 Key features:
 
-- Based on the official WordPress image
+- All images are based on [inrage/docker-php](https://github.com/inrage/docker-php)
+- [Docker Hub](https://hub.docker.com/r/inrage/docker-wordpress)
 - Includes an SMTP server for outgoing emails
 - Supports PHP Redis
 - Advanced configuration for optimal performance
@@ -15,10 +16,9 @@ To install, you need to either mount a directory into `/var/www/html` or customi
 ### Dockerfile
 
 ```Dockerfile
-FROM inrage/docker-wordpress:8.2
+FROM inrage/docker-wordpress:8.3
 
 COPY --chown=inr . .
-RUN cp -a /usr/src/wordpress/wp-config-docker.php wp-config.php
 ```
 
 ### Docker Swarm Configuration
@@ -26,14 +26,14 @@ RUN cp -a /usr/src/wordpress/wp-config-docker.php wp-config.php
 We are using a Docker Swarm configuration with Traefik as a reverse proxy. Here's an example of a `docker-compose.yml` file:
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   redis:
     hostname: mywebsite.redis
     image: redis:7.2.0
     healthcheck:
-      test: [ "CMD-SHELL", "redis-cli --raw incr ping" ]
+      test: ["CMD-SHELL", "redis-cli --raw incr ping"]
     networks:
       - internal-network
     command: redis-server --maxmemory 1024mb --maxmemory-policy allkeys-lru --appendonly yes
@@ -62,8 +62,7 @@ services:
       TZ: "Europe/Paris"
     volumes:
       - /host/website/mywebsite/uploads:/var/www/html/wp-content/uploads
-      - /host/website/mywebsite/object-cache.php:/var/www/html/wp-content/object-cache.php
-      
+
     deploy:
       replicas: 1
       labels:
@@ -94,37 +93,52 @@ networks:
 
 ### WordPress
 
-- `WORDPRESS_DB_HOST`: Database host (default: mysql)
-- `WORDPRESS_DB_USER`: Database user (default: example username)
-- `WORDPRESS_DB_PASSWORD`: Database password (default: example password)
-- `WORDPRESS_DB_NAME`: Database name (default: wordpress)
-- `WORDPRESS_TABLE_PREFIX`: Database table prefix (default: wp_)
-- `WORDPRESS_DEBUG`: Enable debug mode (default: false)
-- `WORDPRESS_CONFIG_EXTRA`: Additional configuration (default: empty)
+| Variable                     | Description                 | Default            |
+| ---------------------------- | --------------------------- | ------------------ |
+| `WORDPRESS_NO_CREATE_CONFIG` | Do not create a config file | `false`            |
+| `WORDPRESS_DB_HOST`          | Database host               | `mysql`            |
+| `WORDPRESS_DB_USER`          | Database user               | `example username` |
+| `WORDPRESS_DB_PASSWORD`      | Database password           | `example password` |
+| `WORDPRESS_DB_NAME`          | Database name               | `wordpress`        |
+| `WORDPRESS_TABLE_PREFIX`     | Database table prefix       | `wp_`              |
+| `WORDPRESS_DEBUG`            | Enable debug mode           | `false`            |
+| `WORDPRESS_CONFIG_EXTRA`     | Additional configuration    | `empty`            |
+| `WORDPRESS_DB_CHARSET`       | Database charset            | `utf8`             |
+| `WORDPRESS_DB_COLLATE`       | Database collate            | `empty`            |
+| `WORDPRESS_AUTH_KEY`         | Authentication key          | `empty`            |
+| `WORDPRESS_SECURE_AUTH_KEY`  | Secure authentication key   | `empty`            |
+| `WORDPRESS_LOGGED_IN_KEY`    | Logged in key               | `empty`            |
+| `WORDPRESS_NONCE_KEY`        | Nonce key                   | `empty`            |
+| `WORDPRESS_AUTH_SALT`        | Authentication              |
+| `WORDPRESS_SECURE_AUTH_SALT` | Secure authentication salt  | `empty`            |
+| `WORDPRESS_LOGGED_IN_SALT`   | Logged in salt              | `empty`            |
+| `WORDPRESS_NONCE_SALT`       | Nonce salt                  | `empty`            |
+
+For `WORDPRESS_NO_CREATE_CONFIG`: Do not create a new configuration file (default: false)
+
+By default, the image will use a new [configuration file](templates/wp-config.php.tmpl) which is generated at runtime and after you can use WordPress environnement.
+
+If you want to use your own configuration file, set this variable to `true`.
 
 For `WORDPRESS_CONFIG_EXTRA`, you can use the following variables:
 
 ```apacheconf
 WORDPRESS_CONFIG_EXTRA: |
-    define( 'DISALLOW_FILE_MODS', true );	
+    define( 'DISALLOW_FILE_MODS', true );
     define( 'WP_MEMORY_LIMIT', '511M' );
     define( 'WP_REDIS_HOST', 'mysite.redis');
 ```
 
-### SMTP
-- `INR_SMTP_HOST`: Relay SMTP server host (default: relay.mailhub)
-- `INR_SMTP_PORT`: Relay SMTP server port (default: 25)
+### From inrage/docker-php image
+
+Refer to the [inrage/docker-php](https://github.com/inrage/docker-php) documentation for more information.
 
 ### Running User
+
 - `INRAGE_USER_ID`: UID of the user to run the application as (default: 1000)
 - `INRAGE_GROUP_ID`: GID of the user to run the application as (default: 1000)
-
-### CRONTAB
-- `CRON_SCHEDULE`: Cron schedule (default: * * * * *)
-- `CRON_WP_BASEPATH`: WordPress base path (default: /var/www/html)
 
 ## Daily Usage
 
 - [WordPress - Roots Sage 9](/docs/roots-sage9.md)
 - [WordPress - Roots Sage 10](/docs/roots-sage10.md)
-
