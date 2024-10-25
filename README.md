@@ -157,6 +157,11 @@ Refer to the [inrage/docker-php](https://github.com/inrage/docker-php) documenta
 - `INRAGE_USER_ID`: UID of the user to run the application as (default: 1000)
 - `INRAGE_GROUP_ID`: GID of the user to run the application as (default: 1000)
 
+## Tools
+
+- `wp`: WordPress CLI
+- `sr`: allow you to replace in the database (`wp search-replace $1 $2 --precise --all-tables --skip-columns=guid`)
+
 ## Daily Usage
 
 - [WordPress - Roots Sage 9](/docs/roots-sage9.md)
