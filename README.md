@@ -1,3 +1,9 @@
+# Docker WordPress
+
+[![Docker Pulls](https://img.shields.io/docker/pulls/inrage/docker-wordpress.svg)](https://hub.docker.com/r/inrage/docker-wordpress)
+[![Docker Stars](https://img.shields.io/docker/stars/inrage/docker-wordpress.svg)](https://hub.docker.com/r/inrage/docker-wordpress)
+[![Docker Image Size](https://img.shields.io/docker/image-size/inrage/docker-wordpress.svg)](https://hub.docker.com/r/inrage/docker-wordpress)
+
 The provided Docker image allows you to deploy your WordPress website in production with a powerful configuration, an integrated SMTP relay, and support for PHP Redis.
 
 Key features:
@@ -8,6 +14,19 @@ Key features:
 - Supports PHP Redis
 - Advanced configuration for optimal performance
 - Easy deployment and scalability with Docker
+
+Supported tags:
+
+- latest:
+  - `8.3` ([Dockerfile](latest/php8.3/apache/Dockerfile)), `8.3-redis` ([Dockerfile](latest/php8.3/apache-redis/Dockerfile))
+  - `8.2` ([Dockerfile](latest/php8.2/apache/Dockerfile)), `8.2-redis` ([Dockerfile](latest/php8.2/apache-redis/Dockerfile))
+  - `8.1` ([Dockerfile](latest/php8.1/apache/Dockerfile)), `8.1-redis` ([Dockerfile](latest/php8.1/apache-redis/Dockerfile))
+  - `8.0` ([Dockerfile](latest/php8.0/apache/Dockerfile)), `8.0-redis` ([Dockerfile](latest/php8.0/apache-redis/Dockerfile))
+  - `7.4` ([Dockerfile](latest/php7.4/apache/Dockerfile)), `7.4-redis` ([Dockerfile](latest/php7.4/apache-redis/Dockerfile))
+- legacy:
+  - `7.2` ([Dockerfile](legacy/php7.2/apache/Dockerfile))
+  - `7.0` ([Dockerfile](legacy/php7.0/apache/Dockerfile))
+  - `5.6` ([Dockerfile](legacy/php5.6/apache/Dockerfile))
 
 ## Installation
 
