@@ -14,7 +14,7 @@ RUN set -eux; \
     rm -rf /var/lib/apt/lists/*; \
     pecl install igbinary; \
     pecl install --configureoptions='enable-redis-igbinary="yes" enable-redis-lzf="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis; \
-    docker-php-ext-enable redis;
+    docker-php-ext-enable redis igbinary;
 
 RUN set -ex; \
     \
