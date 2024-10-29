@@ -9,7 +9,8 @@ FROM inrage/docker-php:8.2
 USER root
 
 RUN set -eux; \
-    pecl install redis; \
+    pecl install igbinary; \
+    pecl install --configureoptions='enable-redis-igbinary="yes" enable-redis-lzf="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis; \
     docker-php-ext-enable redis;
 
 RUN set -ex; \
