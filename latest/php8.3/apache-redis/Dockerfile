@@ -9,6 +9,9 @@ FROM inrage/docker-php:8.3
 USER root
 
 RUN set -eux; \
+    apt update && apt install -y libzstd-dev liblz4-dev; \
+    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+    rm -rf /var/lib/apt/lists/*; \
     pecl install igbinary; \
     pecl install --configureoptions='enable-redis-igbinary="yes" enable-redis-lzf="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis; \
     docker-php-ext-enable redis;
