@@ -11,8 +11,6 @@ start_redis() {
   fi
 }
 
-CONTENT_DIR=$(wp eval 'echo WP_CONTENT_DIR;')
-
 _gotpl() {
   if [[ -f "/etc/gotpl/$1" ]]; then
     gotpl "/etc/gotpl/$1" >"$2"
@@ -22,6 +20,8 @@ _gotpl() {
 if [[ "${WORDPRESS_NO_CREATE_CONFIG}" != "true" ]]; then
   _gotpl "wp-config.php.tmpl" "/var/www/html/wp-config.php"
 fi
+
+CONTENT_DIR=$(wp eval 'echo WP_CONTENT_DIR;')
 
 _gotpl "production.php.tmpl" "${CONTENT_DIR}/mu-plugins/production.php"
 
