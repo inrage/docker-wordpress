@@ -23,6 +23,7 @@ fi
 
 CONTENT_DIR=$(wp eval 'echo WP_CONTENT_DIR;')
 
+mkdir -p "${CONTENT_DIR}/mu-plugins"
 _gotpl "production.php.tmpl" "${CONTENT_DIR}/mu-plugins/production.php"
 
 ## Create upgrade directory
