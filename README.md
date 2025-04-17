@@ -18,6 +18,7 @@ Key features:
 Supported tags:
 
 - latest:
+  - `8.4` ([Dockerfile](latest/php8.4/apache/Dockerfile)), `8.4-redis` ([Dockerfile](latest/php8.4/apache-redis/Dockerfile))
   - `8.3` ([Dockerfile](latest/php8.3/apache/Dockerfile)), `8.3-redis` ([Dockerfile](latest/php8.3/apache-redis/Dockerfile))
   - `8.2` ([Dockerfile](latest/php8.2/apache/Dockerfile)), `8.2-redis` ([Dockerfile](latest/php8.2/apache-redis/Dockerfile))
   - `8.1` ([Dockerfile](latest/php8.1/apache/Dockerfile)), `8.1-redis` ([Dockerfile](latest/php8.1/apache-redis/Dockerfile))
@@ -35,7 +36,7 @@ To install, you need to either mount a directory into `/var/www/html` or customi
 ### Dockerfile
 
 ```Dockerfile
-FROM inrage/docker-wordpress:8.3
+FROM inrage/docker-wordpress:8.4
 
 COPY --chown=inr . .
 ```
