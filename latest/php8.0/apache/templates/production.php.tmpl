@@ -1,8 +1,0 @@
-<?php
-
-add_filter('site_status_tests', function ($tests) {
-    unset($tests['async']['background_updates']);
-
-    return $tests;
-}, 100);
-

@@ -20,33 +20,37 @@ generated_warning() {
 	EOH
 }
 
-version="latest"
-export version
+versions="$(jq -r 'keys | map(@sh) | join(" ")' versions.json)"
+eval "versions=( $versions )"
 
-phpVersions="$(jq -r '.[env.version].phpVersions | map(@sh) | join(" ")' versions.json)"
-eval "phpVersions=( $phpVersions )"
+for version in "${versions[@]}"; do
+    export version
 
-variants="$(jq -r '.[env.version].variants | map(@sh) | join(" ")' versions.json)"
-eval "variants=( $variants )"
+    phpVersions="$(jq -r '.[env.version].phpVersions | map(@sh) | join(" ")' versions.json)"
+    eval "phpVersions=( $phpVersions )"
 
-for phpVersion in "${phpVersions[@]}"; do
-    export phpVersion
+    variants="$(jq -r '.[env.version].variants | map(@sh) | join(" ")' versions.json)"
+    eval "variants=( $variants )"
 
-    for variant in "${variants[@]}"; do
-        export variant
+    for phpVersion in "${phpVersions[@]}"; do
+        export phpVersion
 
-        dir="$version/php$phpVersion/$variant"
-        mkdir -p "$dir"
+        for variant in "${variants[@]}"; do
+            export variant
 
-        echo "processing $dir ..."
+            dir="$version/php$phpVersion/$variant"
+            mkdir -p "$dir"
 
-        {
-          generated_warning
-          gawk -f "$jqt" Dockerfile.template
-        } > "$dir/Dockerfile"
+            echo "processing $dir ..."
 
-        cp -a bin "$dir/"
-        cp -a templates "$dir/"
-        cp -a init "$dir/"
+            {
+              generated_warning
+              gawk -f "$jqt" Dockerfile.template
+            } > "$dir/Dockerfile"
+
+            cp -a bin "$dir/"
+            cp -a templates "$dir/"
+            cp -a init "$dir/"
+        done
     done
 done
