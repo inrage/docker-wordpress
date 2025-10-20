@@ -6,8 +6,8 @@ set -Eeuo pipefail
 JSON_FILE="versions.json"
 BASE_DOCKER_TAG="inrage/docker-wordpress"
 
-# Fetch the list of available versions
-versions=$(jq -r 'keys[]' $JSON_FILE)
+# Fetch the list of available versions (only objects, not wpCliVersion)
+versions=$(jq -r 'to_entries | map(select(.value | type == "object")) | map(.key) | .[]' $JSON_FILE)
 
 # Initialize the output JSON string
 matrix_json="{ \"include\": ["
