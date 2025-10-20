@@ -1,11 +1,24 @@
 {
-  "wpCliVersion": "2.11.0",
+  "wpCliVersion": "2.12.0",
   "legacy": {
-    "phpVersions": ["7.4", "8.0"],
-    "variants": ["apache"]
+    "phpVersions": [
+      "7.4",
+      "8.0"
+    ],
+    "variants": [
+      "apache"
+    ]
   },
   "latest": {
-    "phpVersions": ["8.1", "8.2", "8.3", "8.4"],
-    "variants": ["apache", "apache-redis"]
+    "phpVersions": [
+      "8.1",
+      "8.2",
+      "8.3",
+      "8.4"
+    ],
+    "variants": [
+      "apache",
+      "apache-redis"
+    ]
   }
 }
