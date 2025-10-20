@@ -20,7 +20,10 @@ generated_warning() {
 	EOH
 }
 
-versions="$(jq -r 'keys | map(@sh) | join(" ")' versions.json)"
+wpCliVersion="$(jq -r '.wpCliVersion' versions.json)"
+export wpCliVersion
+
+versions="$(jq -r 'to_entries | map(select(.value | type == "object")) | map(.key) | map(@sh) | join(" ")' versions.json)"
 eval "versions=( $versions )"
 
 for version in "${versions[@]}"; do
