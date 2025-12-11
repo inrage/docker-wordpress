@@ -28,13 +28,11 @@ if wp cache &>/dev/null; then
 
   # Run wp cache flush command
   if [ "${SKIP_CACHE_FLUSH:-false}" = "true" ]; then
-    echo "⚡ SKIP_CACHE_FLUSH est actif : On conserve le cache existant (Mode High-Traffic)."
+    echo "⚡ SKIP_CACHE_FLUSH is enabled : The existing cache is retained (High-Traffic Mode)."
   else
     echo "Flushing cache..."
     if ! wp cache flush; then
       echo "Failed to flush cache" >&2
-      # On ne quitte pas forcément en erreur ici, car si Redis est down, le site peut quand même marcher
-      # exit 1
     fi
   fi
 else
