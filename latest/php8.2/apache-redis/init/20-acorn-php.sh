@@ -27,10 +27,15 @@ if wp cache &>/dev/null; then
   echo "wp cache command is available"
 
   # Run wp cache flush command
-  echo "Flushing cache..."
-  if ! wp cache flush; then
-    echo "Failed to flush cache" >&2
-    exit 1
+  if [ "${SKIP_CACHE_FLUSH:-false}" = "true" ]; then
+    echo "⚡ SKIP_CACHE_FLUSH est actif : On conserve le cache existant (Mode High-Traffic)."
+  else
+    echo "Flushing cache..."
+    if ! wp cache flush; then
+      echo "Failed to flush cache" >&2
+      # On ne quitte pas forcément en erreur ici, car si Redis est down, le site peut quand même marcher
+      # exit 1
+    fi
   fi
 else
   echo "project is not using cache or cache is not installed... skipping cache commands."
