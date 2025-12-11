@@ -3,15 +3,11 @@
 set -e
 
 start_redis() {
-  if [ "${SKIP_CACHE_FLUSH:-false}" = "true" ]; then
-    echo "⚡ SKIP_CACHE_FLUSH : Skipping Redis force enable to preserve cache."
+  if wp redis &>/dev/null; then
+    echo "Redis is installed... enabling Redis object cache..."
+    wp redis enable --force
   else
-    if wp redis &>/dev/null; then
-      echo "Redis is installed... enabling Redis object cache..."
-      wp redis enable --force
-    else
-      echo "Redis is not installed... skipping Redis commands."
-    fi
+    echo "Redis is not installed... skipping Redis commands."
   fi
 }
 
