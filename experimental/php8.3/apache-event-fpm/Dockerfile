@@ -25,6 +25,8 @@ RUN set -ex; \
   cd /home/inr; \
   echo "source /usr/local/include/wp-completion.bash" | tee -a .bash_profile .bashrc;
 
+USER inr
+
 COPY templates /etc/gotpl/
 COPY bin /usr/local/bin
 
