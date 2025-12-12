@@ -20,5 +20,8 @@
       "apache",
       "apache-redis"
     ]
-  }
+  },
+  "experimental": [
+    { "context": "experimental/php8.3/apache-event-fpm", "tag": "inrage/docker-wordpress:8.3-event-fpm", "name": "experimental-8.3-event-fpm" }
+  ]
 }

@@ -6,8 +6,8 @@ set -Eeuo pipefail
 JSON_FILE="versions.json"
 BASE_DOCKER_TAG="inrage/docker-wordpress"
 
-# Fetch the list of available versions (only objects, not wpCliVersion)
-versions=$(jq -r 'to_entries | map(select(.value | type == "object")) | map(.key) | .[]' $JSON_FILE)
+# Fetch the list of available versions (only objects, exclude experimental and wpCliVersion)
+versions=$(jq -r 'to_entries | map(select(.value | type == "object")) | map(.key) | map(select(. != "experimental")) | .[]' $JSON_FILE)
 
 # Initialize the output JSON string
 matrix_json="{ \"include\": ["
@@ -50,6 +50,15 @@ for ver in $versions; do
 
     done
   done
+done
+
+# Add experimental builds (not managed by apply-templates.sh)
+experimental_builds=$(jq -r '.experimental // [] | .[]? | @json' $JSON_FILE)
+for build in $experimental_builds; do
+  context=$(echo "$build" | jq -r '.context')
+  tag=$(echo "$build" | jq -r '.tag')
+  name=$(echo "$build" | jq -r '.name')
+  matrix_json+=" {\"context\": \"${context}\", \"tag\": \"${tag}\", \"name\": \"${name}\"},"
 done
 
 # Remove the trailing comma and close the JSON string
