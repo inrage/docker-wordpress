@@ -1,0 +1,41 @@
+{
+	{$CADDY_GLOBAL_OPTIONS}
+
+	auto_https off
+
+	frankenphp {
+		num_threads {$FRANKENPHP_NUM_THREADS:4}
+		{$FRANKENPHP_CONFIG:}
+	}
+
+	servers {
+		trusted_proxies static {$TRUSTED_PROXIES:private_ranges}
+	}
+
+	order cache before rewrite
+
+	cache {
+		ttl {$SOUIN_TTL:120s}
+		stale {$SOUIN_STALE:60s}
+		redis {
+			url {$REDIS_HOST:redis}:{$REDIS_PORT:6379}
+		}
+	}
+}
+
+{$SERVER_NAME} {
+	root * {$SERVER_ROOT:/var/www/html/public}
+
+	encode zstd br gzip
+
+	@bypass header_regexp Cookie "({$INR_CACHE_BYPASS_COOKIES:wordpress_logged_in_})"
+
+	handle @bypass {
+		php_server
+	}
+
+	handle {
+		{$INR_CACHE_DIRECTIVE:}
+		php_server
+	}
+}

@@ -46,14 +46,24 @@ for version in "${versions[@]}"; do
 
             echo "processing $dir ..."
 
+            template="Dockerfile.template"
+            if [ -f "variants/$variant/Dockerfile.template" ]; then
+                template="variants/$variant/Dockerfile.template"
+            fi
+
             {
               generated_warning
-              gawk -f "$jqt" Dockerfile.template
+              gawk -f "$jqt" "$template"
             } > "$dir/Dockerfile"
 
             cp -a bin "$dir/"
             cp -a templates "$dir/"
             cp -a init "$dir/"
+
+            if [ -d "variants/$variant" ]; then
+                cp -a "variants/$variant/." "$dir/"
+                rm -f "$dir/Dockerfile.template"
+            fi
         done
     done
 done
