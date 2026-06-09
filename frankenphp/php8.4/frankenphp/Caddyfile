@@ -14,13 +14,7 @@
 
 	order cache before rewrite
 
-	cache {
-		ttl {$SOUIN_TTL:120s}
-		stale {$SOUIN_STALE:60s}
-		redis {
-			url {$REDIS_HOST:redis}:{$REDIS_PORT:6379}
-		}
-	}
+	{$CADDY_CACHE_GLOBAL:}
 }
 
 {$SERVER_NAME} {

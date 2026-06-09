@@ -36,10 +36,20 @@ case "$WP_PROFILE" in
   ;;
 esac
 
-if [ "${INR_CACHE}" = "on" ]; then
+if [ "${INR_CACHE}" = "on" ] && [ -n "${REDIS_HOST:-}" ]; then
   INR_CACHE_DIRECTIVE="cache"
+  CADDY_CACHE_GLOBAL="cache {
+	ttl ${SOUIN_TTL:-120s}
+	stale ${SOUIN_STALE:-60s}
+	redis {
+		url ${REDIS_HOST}:${REDIS_PORT:-6379}
+	}
+}"
+  echo "✅ [init] Souin full-page cache activé (Redis ${REDIS_HOST})"
 else
   INR_CACHE_DIRECTIVE=""
+  CADDY_CACHE_GLOBAL=""
+  echo "ℹ️  [init] pas de REDIS_HOST → full-page cache Souin désactivé"
 fi
 
 export PHP_MEMORY_LIMIT PHP_OPCACHE_VALIDATE_TIMESTAMPS PHP_OPCACHE_MEMORY_CONSUMPTION \
@@ -50,6 +60,7 @@ if [ -n "${INRAGE_RUNTIME_ENV:-}" ]; then
   {
     printf "export INR_CACHE_DIRECTIVE='%s'\n" "${INR_CACHE_DIRECTIVE}"
     printf "export INR_CACHE_BYPASS_COOKIES='%s'\n" "${INR_CACHE_BYPASS_COOKIES}"
+    printf "export CADDY_CACHE_GLOBAL='%s'\n" "${CADDY_CACHE_GLOBAL}"
   } >> "$INRAGE_RUNTIME_ENV"
 fi
 

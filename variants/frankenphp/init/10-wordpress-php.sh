@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
-start_redis() {
-  if wp redis &>/dev/null; then
-    echo "Redis object cache plugin detected... enabling."
-    wp redis enable --force || true
+start_object_cache() {
+  if wp object-cache &>/dev/null; then
+    echo "Object Cache Pro detected... enabling drop-in."
+    wp object-cache enable --force >/dev/null 2>&1 || true
+  elif wp redis &>/dev/null; then
+    echo "Redis Object Cache plugin detected... enabling."
+    wp redis enable --force >/dev/null 2>&1 || true
   else
-    echo "No Redis object cache plugin... skipping (OCP manages its own drop-in)."
+    echo "No object cache plugin installed... skipping (default in-memory cache)."
   fi
 }
 
@@ -34,4 +37,4 @@ _gomplate "production.php.tmpl" "${content_dir}/mu-plugins/production.php"
 
 mkdir -p "${content_dir}/upgrade"
 
-start_redis
+start_object_cache
