@@ -2,14 +2,11 @@
 set -e
 
 start_object_cache() {
-  if wp object-cache &>/dev/null; then
-    echo "Object Cache Pro detected... enabling drop-in."
-    wp object-cache enable --force >/dev/null 2>&1 || true
-  elif wp redis &>/dev/null; then
-    echo "Redis Object Cache plugin detected... enabling."
+  if wp cli has-command 'redis enable' >/dev/null 2>&1; then
+    echo "Redis object cache detected... enabling drop-in."
     wp redis enable --force >/dev/null 2>&1 || true
   else
-    echo "No object cache plugin installed... skipping (default in-memory cache)."
+    echo "No redis object cache plugin installed... skipping (default in-memory cache)."
   fi
 }
 
