@@ -1,5 +1,5 @@
 {
-  "wpCliVersion": "2.12.0",
+  "wpCliVersion": "null",
   "legacy": {
     "phpVersions": [
       "7.4",
@@ -30,6 +30,10 @@
     ]
   },
   "experimental": [
-    { "context": "experimental/php8.3/apache-event-fpm", "tag": "inrage/docker-wordpress:8.3-event-fpm", "name": "experimental-8.3-event-fpm" }
+    {
+      "context": "experimental/php8.3/apache-event-fpm",
+      "tag": "inrage/docker-wordpress:8.3-event-fpm",
+      "name": "experimental-8.3-event-fpm"
+    }
   ]
 }

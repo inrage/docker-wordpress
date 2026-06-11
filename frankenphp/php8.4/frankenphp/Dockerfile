@@ -8,7 +8,7 @@ FROM inrage/frankenphp:8.4
 
 USER root
 
-ADD --chmod=755 https://github.com/wp-cli/wp-cli/releases/download/v2.12.0/wp-cli-2.12.0.phar /usr/local/bin/wp
+ADD --chmod=755 https://github.com/wp-cli/wp-cli/releases/download/vnull/wp-cli-null.phar /usr/local/bin/wp
 
 COPY Caddyfile /etc/frankenphp/Caddyfile
 COPY mu-plugins /etc/inrage/mu-plugins/

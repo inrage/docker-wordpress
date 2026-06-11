@@ -19,7 +19,7 @@ RUN set -eux; \
 RUN set -ex; \
     \
     cd /tmp; \
-    wp_cli_version="2.12.0"; \
+    wp_cli_version="null"; \
     url="https://github.com/wp-cli/wp-cli/releases/download/v${wp_cli_version}/wp-cli-${wp_cli_version}.phar"; \
     curl -o wp.phar -fSL "${url}"; \
     chmod +x wp.phar; \
