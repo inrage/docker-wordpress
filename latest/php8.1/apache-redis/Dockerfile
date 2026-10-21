@@ -12,8 +12,13 @@ RUN set -eux; \
     apt update && apt install -y libzstd-dev liblz4-dev; \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
     rm -rf /var/lib/apt/lists/*; \
-    pecl install igbinary; \
-    pecl install --configureoptions='enable-redis-igbinary="yes" enable-redis-lzf="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' redis; \
+    mkdir -p /tmp/pecl-src; \
+    curl -fsSL https://github.com/igbinary/igbinary/archive/refs/tags/3.2.17RC1.tar.gz | tar xz -C /tmp/pecl-src; \
+    curl -fsSL https://github.com/phpredis/phpredis/archive/refs/tags/6.3.0.tar.gz | tar xz -C /tmp/pecl-src; \
+    curl -fsSL https://github.com/nemequ/liblzf/archive/fb25820c3c0aeafd127956ae6c115063b47e459a.tar.gz | tar xz --strip-components=1 -C /tmp/pecl-src/phpredis-6.3.0/liblzf; \
+    pecl install /tmp/pecl-src/igbinary-3.2.17RC1/package.xml; \
+    pecl install --configureoptions='enable-redis-igbinary="yes" enable-redis-lzf="yes" enable-redis-zstd="yes" enable-redis-lz4="yes"' /tmp/pecl-src/phpredis-6.3.0/package.xml; \
+    rm -rf /tmp/pecl-src; \
     docker-php-ext-enable redis igbinary;
 
 RUN set -ex; \
