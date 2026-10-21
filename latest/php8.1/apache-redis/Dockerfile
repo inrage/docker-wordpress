@@ -9,6 +9,12 @@ FROM inrage/docker-php:8.1
 USER root
 
 RUN set -eux; \
+    if [ -f /etc/apt/sources.list.d/sury-php.list ]; then \
+    apt-get update; \
+    apt-get install -y --no-install-recommends "php${PHP_VERSION%.*}-redis" "php${PHP_VERSION%.*}-igbinary"; \
+    rm -rf /var/lib/apt/lists/*; \
+    exit 0; \
+    fi; \
     apt update && apt install -y libzstd-dev liblz4-dev; \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
     rm -rf /var/lib/apt/lists/*; \
