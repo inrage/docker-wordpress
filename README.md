@@ -133,6 +133,9 @@ networks:
 | `WORDPRESS_SECURE_AUTH_SALT` | Secure authentication salt  | `empty`            |
 | `WORDPRESS_LOGGED_IN_SALT`   | Logged in salt              | `empty`            |
 | `WORDPRESS_NONCE_SALT`       | Nonce salt                  | `empty`            |
+| `WORDPRESS_DB_WAIT`          | Seconds to wait for WordPress at boot | `60`     |
+
+The init never blocks the container start. Without WordPress core files (e.g. a static placeholder page), or when WordPress is not installed yet (e.g. files uploaded before the database import), the WordPress setup is skipped and Apache starts. When the database is unreachable, the init retries for `WORDPRESS_DB_WAIT` seconds, then starts anyway; the mu-plugin and Redis drop-in are set up on the next start.
 
 For `WORDPRESS_NO_CREATE_CONFIG`: Do not create a new configuration file (default: false)
 
