@@ -16,6 +16,9 @@ COPY tests/fixtures/init /init
 COPY tests/fixtures/99-test.sh /docker-entrypoint-init.d/99-test.sh
 COPY templates/production.php.tmpl /tests/production.php
 COPY tests/wp-cli-url-context.php /tests/wp-cli-url-context.php
+COPY tests/wp-rocket-config.php /tests/wp-rocket-config.php
+COPY templates/production.php.tmpl /etc/gomplate/production.php.tmpl
+COPY variants/frankenphp/init/10-wordpress-php.sh /tests/frankenphp-init.sh
 RUN chmod +x /usr/local/bin/wordpress-entrypoint.sh /usr/local/bin/wp /init
 
 USER inr

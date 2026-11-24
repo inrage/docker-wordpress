@@ -1,8 +1,10 @@
 name: Test command startup
 
 on:
+  workflow_call:
   pull_request:
   push:
+    branches-ignore: [main]
 
 jobs:
   command-startup:

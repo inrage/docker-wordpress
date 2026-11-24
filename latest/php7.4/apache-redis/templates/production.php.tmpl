@@ -8,6 +8,32 @@ if (defined('WP_CLI') && WP_CLI && ! WP_CLI::get_config('url') && ! WP_CLI::get_
     }
 }
 
+if (defined('WP_CLI') && WP_CLI) {
+    add_action('wp_loaded', function () {
+        if (!function_exists('rocket_generate_config_file')) {
+            return;
+        }
+
+        [$files] = get_rocket_config_file();
+
+        foreach ($files as $file) {
+            if (!is_readable($file)) {
+                rocket_generate_config_file();
+
+                foreach ($files as $generated_file) {
+                    clearstatcache(true, $generated_file);
+
+                    if (!is_readable($generated_file)) {
+                        WP_CLI::error('Could not generate WP Rocket configuration.');
+                    }
+                }
+
+                return;
+            }
+        }
+    });
+}
+
 add_filter('site_status_tests', function ($tests) {
     unset($tests['async']['background_updates']);
 

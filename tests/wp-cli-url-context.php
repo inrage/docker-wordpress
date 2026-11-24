@@ -66,6 +66,10 @@ function get_option($key)
     return $case['home'];
 }
 
+function add_action($name, $callback)
+{
+}
+
 function add_filter($name, $callback, $priority)
 {
 }

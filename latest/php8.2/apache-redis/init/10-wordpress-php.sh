@@ -46,6 +46,11 @@ wordpress_ready() {
 
   error_file="$(mktemp)"
   while ! CONTENT_DIR="$(wp eval 'echo WP_CONTENT_DIR;' 2>"${error_file}")"; do
+    if grep -Fq 'Could not generate WP Rocket configuration.' "${error_file}"; then
+      cat "${error_file}" >&2
+      rm -f "${error_file}"
+      exit 1
+    fi
     error="$(grep -m 1 . "${error_file}" || true)"
     if grep -q "is not installed" "${error_file}" || ((SECONDS >= deadline)); then
       echo "WordPress is not ready (${error})... skipping WordPress setup." >&2
@@ -65,6 +70,7 @@ fi
 if wordpress_ready; then
   mkdir -p "${CONTENT_DIR}/mu-plugins"
   _gotpl "production.php.tmpl" "${CONTENT_DIR}/mu-plugins/production.php"
+  wp eval ''
 
   ## Create upgrade directory
   if [[ ! -d "${CONTENT_DIR}/upgrade" ]]; then

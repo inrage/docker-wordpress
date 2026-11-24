@@ -125,6 +125,12 @@ cronjob:
 
 Use the same database configuration and persistent WordPress content as the web service. The command's exit code and signals are preserved. This command behavior applies to the Apache variants; FrankenPHP retains its own startup sequence.
 
+## WP Rocket configuration
+
+When WP Rocket is active, startup regenerates missing domain configuration files through the plugin's native API before starting the web server. The same check runs during WP-CLI startup, including the selected site in multisite. An existing complete set of readable configuration files is retained. If a file is missing, WP Rocket regenerates the current site's configuration set. Failure to create an expected file stops WP-CLI commands and Apache startup. The FrankenPHP parent image logs initialization errors and can continue starting its server; its WordPress initialization hook stops on this error, but the parent startup policy is unchanged. No WP Rocket installation or license is included in these images.
+
+The generated configuration directory must be writable by the container user when regeneration is needed. This does not replace persistent uploads or cache storage. In multisite, each site's configuration is checked when that site is loaded; startup does not enumerate the network.
+
 ## Environment Variable
 
 ### WordPress

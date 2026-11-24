@@ -8,7 +8,24 @@ case "$*" in
     printf '6.8\n'
     ;;
   "eval echo WP_CONTENT_DIR;")
+    if [ "${TEST_ROCKET_CONFIG_FAIL:-false}" = bootstrap ]; then
+      printf 'Error: Could not generate WP Rocket configuration.\n' >&2
+      exit 1
+    fi
+    if [ "${TEST_WP_UNINSTALLED:-false}" = true ]; then
+      printf 'Error: WordPress is not installed.\n' >&2
+      exit 1
+    fi
     printf '/var/www/html/wp-content\n'
+    ;;
+  "eval ")
+    if [ "${TEST_ROCKET_CONFIG_FAIL:-false}" = true ]; then
+      printf 'Error: Could not generate WP Rocket configuration.\n' >&2
+      exit 42
+    fi
+    ;;
+  "cli has-command redis enable")
+    exit 1
     ;;
   "redis"|"acorn"|"acorn optimize"|"acorn icons"|"acorn icons:cache"|"cache")
     ;;
