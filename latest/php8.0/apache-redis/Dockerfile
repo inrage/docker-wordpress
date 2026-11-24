@@ -48,3 +48,5 @@ COPY templates /etc/gotpl/
 COPY bin /usr/local/bin
 
 COPY init /docker-entrypoint-init.d/
+
+ENTRYPOINT ["/usr/local/bin/wordpress-entrypoint.sh"]

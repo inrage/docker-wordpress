@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+printf '%s\n' "$*" >> /tmp/wp-calls
+
+case "$*" in
+  "core version")
+    printf '6.8\n'
+    ;;
+  "eval echo WP_CONTENT_DIR;")
+    printf '/var/www/html/wp-content\n'
+    ;;
+  "redis"|"acorn"|"acorn optimize"|"acorn icons"|"acorn icons:cache"|"cache")
+    ;;
+  "redis enable --force")
+    printf 'replaced-drop-in\n' > /var/www/html/wp-content/object-cache.php
+    rm -f /tmp/cache-sentinel /tmp/transient-sentinel
+    ;;
+  "cache flush")
+    rm -f /tmp/cache-sentinel
+    ;;
+  *)
+    printf 'Unexpected wp invocation: %s\n' "$*" >&2
+    exit 91
+    ;;
+esac

@@ -1,0 +1,13 @@
+name: Test command startup
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  command-startup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify command and server startup
+        run: ./tests/command-mode.sh

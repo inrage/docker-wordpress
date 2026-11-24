@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+. /etc/s6-overlay/scripts/init-templates
+printf 'SERVER_STARTED\n'
+cat /tmp/wp-calls

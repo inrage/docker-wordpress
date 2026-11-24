@@ -109,6 +109,20 @@ networks:
     external: true
 ```
 
+## One-off commands
+
+The Apache images start the web server when no command is provided. An explicit command, such as `wp cron event run --due-now`, prepares the PHP, mail and WordPress configuration and then runs directly without starting Apache or PHP-FPM.
+
+Command startup preserves existing Redis data, transients and the object-cache drop-in. If the drop-in is missing, it installs the one provided by the active Object Cache Pro or Redis Object Cache plugin without enabling or flushing the cache. Other Redis plugins require an existing drop-in. Acorn optimization and cache flushing are skipped during command startup; operations explicitly requested by the command still run.
+
+```yaml
+cronjob:
+  image: inrage/docker-wordpress:8.3-redis
+  command: ["wp", "cron", "event", "run", "--due-now"]
+```
+
+Use the same database configuration and persistent WordPress content as the web service. The command's exit code and signals are preserved. This command behavior applies to the Apache variants; FrankenPHP retains its own startup sequence.
+
 ## Environment Variable
 
 ### WordPress

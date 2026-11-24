@@ -2,6 +2,10 @@
 
 set -e
 
+if [[ "${WORDPRESS_COMMAND_MODE:-false}" == "true" ]]; then
+  return
+fi
+
 if wp acorn &>/dev/null; then
   echo "wp acorn command is available"
 
