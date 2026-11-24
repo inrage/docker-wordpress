@@ -62,3 +62,8 @@ docker run --rm --network none --platform linux/amd64 "$test_image" sh -ec '
   test "$(grep -c "^cache flush$" /tmp/wp-calls)" -eq 1
 ' > "$test_dir/explicit.log"
 printf 'PASS explicitly requested cache command\n'
+
+for scenario in web web-false https http subdirectory explicit-http explicit-https explicit-blog missing-home empty-home; do
+  docker run --rm --network none --platform linux/amd64 --entrypoint php "$test_image" \
+    /tests/wp-cli-url-context.php "$scenario" /tests/production.php
+done

@@ -115,6 +115,8 @@ The Apache images start the web server when no command is provided. An explicit 
 
 Command startup preserves existing Redis data, transients and the object-cache drop-in. If the drop-in is missing, it installs the one provided by the active Object Cache Pro or Redis Object Cache plugin without enabling or flushing the cache. Other Redis plugins require an existing drop-in. Acorn optimization and cache flushing are skipped during command startup; operations explicitly requested by the command still run.
 
+WP-CLI uses the configured WordPress home URL when no URL was supplied through its arguments, aliases or configuration. This preserves the site's HTTP or HTTPS context for commands such as cache preloading. Explicit `--url` and legacy `--blog` values take precedence, and an uninstalled site with no home URL is left unchanged.
+
 ```yaml
 cronjob:
   image: inrage/docker-wordpress:8.3-redis

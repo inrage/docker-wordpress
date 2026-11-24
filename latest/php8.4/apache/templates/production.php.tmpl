@@ -1,5 +1,13 @@
 <?php
 
+if (defined('WP_CLI') && WP_CLI && ! WP_CLI::get_config('url') && ! WP_CLI::get_config('blog')) {
+    $wp_cli_home_url = get_option('home');
+
+    if ($wp_cli_home_url) {
+        WP_CLI::set_url($wp_cli_home_url);
+    }
+}
+
 add_filter('site_status_tests', function ($tests) {
     unset($tests['async']['background_updates']);
 

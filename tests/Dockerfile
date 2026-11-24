@@ -14,6 +14,8 @@ COPY bin/wordpress-entrypoint.sh /usr/local/bin/wordpress-entrypoint.sh
 COPY tests/fixtures/wp /usr/local/bin/wp
 COPY tests/fixtures/init /init
 COPY tests/fixtures/99-test.sh /docker-entrypoint-init.d/99-test.sh
+COPY templates/production.php.tmpl /tests/production.php
+COPY tests/wp-cli-url-context.php /tests/wp-cli-url-context.php
 RUN chmod +x /usr/local/bin/wordpress-entrypoint.sh /usr/local/bin/wp /init
 
 USER inr
