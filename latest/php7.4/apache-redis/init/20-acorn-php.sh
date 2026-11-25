@@ -27,18 +27,17 @@ else
   echo "project is not using Acorn or Acorn is not installed... skipping Acorn commands."
 fi
 
-if wp cache &>/dev/null; then
-  echo "wp cache command is available"
+if [ "${SKIP_CACHE_FLUSH:-true}" != false ]; then
+  echo "Cache flush skipped."
+  return
+fi
 
-  # Run wp cache flush command
-  if [ "${SKIP_CACHE_FLUSH:-false}" = "true" ]; then
-    echo "⚡ SKIP_CACHE_FLUSH is enabled : The existing cache is retained (High-Traffic Mode)."
-  else
-    echo "Flushing cache..."
-    if ! wp cache flush; then
-      echo "Failed to flush cache" >&2
-    fi
+if wp cache &>/dev/null; then
+  echo "Flushing cache..."
+  if ! wp cache flush; then
+    echo "Failed to flush cache" >&2
+    exit 1
   fi
 else
-  echo "project is not using cache or cache is not installed... skipping cache commands."
+  echo "WordPress cache is not available... skipping cache flush."
 fi

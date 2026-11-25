@@ -9,7 +9,7 @@ case "$*" in
     ;;
   "eval echo WP_CONTENT_DIR;")
     if [ "${TEST_ROCKET_CONFIG_FAIL:-false}" = bootstrap ]; then
-      printf 'Error: Could not generate WP Rocket configuration.\n' >&2
+      printf 'Error: %s\n' "${TEST_ROCKET_MESSAGE:-Could not generate WP Rocket configuration.}" >&2
       exit 1
     fi
     if [ "${TEST_WP_UNINSTALLED:-false}" = true ]; then
@@ -20,7 +20,7 @@ case "$*" in
     ;;
   "eval ")
     if [ "${TEST_ROCKET_CONFIG_FAIL:-false}" = true ]; then
-      printf 'Error: Could not generate WP Rocket configuration.\n' >&2
+      printf 'Error: %s\n' "${TEST_ROCKET_MESSAGE:-Could not generate WP Rocket configuration.}" >&2
       exit 42
     fi
     ;;
@@ -37,12 +37,12 @@ case "$*" in
     rm -f /tmp/cache-sentinel /tmp/transient-sentinel
     ;;
   "cache flush")
+    if [ "${TEST_CACHE_FLUSH_FAIL:-false}" = true ]; then
+      exit 43
+    fi
     rm -f /tmp/cache-sentinel
     ;;
-  "eval "*)
-    if [[ "$2" != *RedisCachePro* ]]; then
-      exit 91
-    fi
+  "eval-file /usr/local/bin/wordpress-object-cache.php")
     php -r '
       define("WP_CONTENT_DIR", "/var/www/html/wp-content");
       if ($argv[2] === "pro") {
@@ -50,13 +50,24 @@ case "$*" in
       } elseif ($argv[2] === "community") {
           define("WP_REDIS_PLUGIN_PATH", "/tests/redis/community");
       }
+      function get_file_data($file, $headers) {
+          $data = file_get_contents($file);
+          $uri = strpos($data, "pro-drop-in") !== false ? "https://objectcache.pro" : "";
+          if (strpos($data, "community-drop-in") !== false) {
+              $uri = "https://wordpress.org/plugins/redis-cache/";
+          }
+          return ["PluginURI" => $uri];
+      }
+      function wp_opcache_invalidate($file, $force) {
+          file_put_contents("/tmp/dropin-updates", "updated\n", FILE_APPEND);
+      }
       class WP_CLI {
           public static function error($message) {
               fwrite(STDERR, $message . PHP_EOL);
               exit(1);
           }
       }
-      eval($argv[1]);
+      require $argv[1];
     ' "$2" "${TEST_REDIS_PLUGIN:-unknown}"
     ;;
   *)

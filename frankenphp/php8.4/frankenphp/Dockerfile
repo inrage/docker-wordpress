@@ -21,3 +21,6 @@ RUN set -eux; \
 	chown -R inr:inr /etc/inrage
 
 USER inr
+
+ENTRYPOINT ["/usr/local/bin/wordpress-entrypoint.sh"]
+CMD ["frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile"]

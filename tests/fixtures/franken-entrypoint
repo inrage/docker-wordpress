@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -eo pipefail
+
+gomplate() { cp "$2" "$4"; }
+export WORDPRESS_NO_CREATE_CONFIG=true
+. /tests/frankenphp-init.sh
+. /docker-entrypoint-init.d/20-acorn-php.sh
+
+if [[ "${1##*/}" == frankenphp && "${2:-}" == run ]]; then
+  test "${WORDPRESS_COMMAND_MODE:-false}" = false
+  test -e /tmp/cache-sentinel
+  test -e /tmp/transient-sentinel
+  echo FRANKENPHP_SERVER_STARTED
+  exit
+fi
+
+exec "$@"

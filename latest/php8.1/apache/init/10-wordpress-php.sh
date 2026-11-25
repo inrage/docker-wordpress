@@ -4,25 +4,7 @@ set -e
 
 start_redis() {
   if wp redis &>/dev/null; then
-    if [[ "${WORDPRESS_COMMAND_MODE:-false}" == "true" || "${SKIP_CACHE_FLUSH:-false}" == "true" ]]; then
-      if [[ ! -f "${CONTENT_DIR}/object-cache.php" ]]; then
-        wp eval '
-          if (defined("RedisCachePro\\Filename")) {
-              $source = dirname(constant("RedisCachePro\\Filename")) . "/stubs/object-cache.php";
-          } elseif (defined("WP_REDIS_PLUGIN_PATH")) {
-              $source = WP_REDIS_PLUGIN_PATH . "/includes/object-cache.php";
-          } else {
-              WP_CLI::error("Cannot initialize this Redis plugin without flushing its cache.");
-          }
-          if (!is_readable($source) || !copy($source, WP_CONTENT_DIR . "/object-cache.php")) {
-              WP_CLI::error("Could not install the Redis object cache drop-in.");
-          }
-        '
-      fi
-      return
-    fi
-    echo "Redis is installed... enabling Redis object cache..."
-    wp redis enable --force
+    wp eval-file /usr/local/bin/wordpress-object-cache.php
   else
     echo "Redis is not installed... skipping Redis commands."
   fi
@@ -46,7 +28,7 @@ wordpress_ready() {
 
   error_file="$(mktemp)"
   while ! CONTENT_DIR="$(wp eval 'echo WP_CONTENT_DIR;' 2>"${error_file}")"; do
-    if grep -Fq 'Could not generate WP Rocket configuration.' "${error_file}"; then
+    if grep -Fq 'Could not generate WP Rocket ' "${error_file}"; then
       cat "${error_file}" >&2
       rm -f "${error_file}"
       exit 1

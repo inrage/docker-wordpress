@@ -3,6 +3,10 @@
  * Plugin Name: inRage WP Rocket + Souin
  */
 
+if (getenv('INR_CACHE_DIRECTIVE') !== 'cache') {
+    return;
+}
+
 add_filter('do_rocket_generate_caching_files', '__return_false', PHP_INT_MAX);
 
 if (!function_exists('inr_souin_purge_all')) {

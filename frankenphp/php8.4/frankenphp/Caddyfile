@@ -33,3 +33,5 @@
 		php_server
 	}
 }
+
+import /etc/frankenphp/health.Caddyfile

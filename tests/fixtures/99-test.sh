@@ -13,3 +13,11 @@ if [ "${TEST_PRESERVE_CACHE:-false}" = true ]; then
     test "$(cat /var/www/html/wp-content/object-cache.php)" = "$TEST_EXPECT_DROPIN"
   fi
 fi
+
+if [ -n "${TEST_EXPECT_UPDATES:-}" ]; then
+  updates=0
+  if [ -f /tmp/dropin-updates ]; then
+    updates="$(wc -l < /tmp/dropin-updates)"
+  fi
+  test "$updates" -eq "$TEST_EXPECT_UPDATES"
+fi

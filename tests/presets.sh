@@ -12,7 +12,7 @@ for scenario in high-traffic vitrine woocommerce vitrine-heavy default overrides
     expected_opcache=640
     expected_files=100000
     expected_timestamps=1
-    expected_flush=false
+    expected_flush=true
     expected_children=20
     expected_workers=150
     case "$1" in
@@ -40,6 +40,7 @@ for scenario in high-traffic vitrine woocommerce vitrine-heavy default overrides
           PHP_FPM_PM_MAX_CHILDREN=8 PHP_FPM_PM_START_SERVERS=2 \
           PHP_FPM_PM_MIN_SPARE_SERVERS=1 PHP_FPM_PM_MAX_SPARE_SERVERS=4 \
           APACHE_EVENT_MAX_REQUEST_WORKERS=100
+        expected_flush=false
         expected_memory=384M
         expected_opcache=256
         expected_files=30000

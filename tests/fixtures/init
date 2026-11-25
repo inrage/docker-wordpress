@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -eo pipefail
 
+test ! -e /tmp/inrage-command-mode
 . /etc/s6-overlay/scripts/init-templates
 printf 'SERVER_STARTED\n'
 cat /tmp/wp-calls

@@ -14,16 +14,22 @@ RUN rm -f /docker-entrypoint-init.d/* \
 
 COPY init/ /docker-entrypoint-init.d/
 COPY bin/wordpress-entrypoint.sh /usr/local/bin/wordpress-entrypoint.sh
+COPY bin/wordpress-object-cache.php /usr/local/bin/wordpress-object-cache.php
+COPY variants/frankenphp/bin/wordpress-entrypoint.sh /tests/frankenphp-entrypoint.sh
+COPY tests/fixtures/franken-entrypoint /usr/local/bin/inrage-entrypoint.sh
 COPY tests/fixtures/wp /usr/local/bin/wp
 COPY tests/fixtures/init /init
 COPY tests/fixtures/99-test.sh /docker-entrypoint-init.d/99-test.sh
 COPY templates/production.php.tmpl /tests/production.php
 COPY tests/wp-cli-url-context.php /tests/wp-cli-url-context.php
 COPY tests/wp-rocket-config.php /tests/wp-rocket-config.php
+COPY tests/wp-rocket-souin.php /tests/wp-rocket-souin.php
+COPY tests/wp-rocket-htaccess.php /tests/wp-rocket-htaccess.php
+COPY variants/frankenphp/mu-plugins/inr-wp-rocket-souin.php /tests/inr-wp-rocket-souin.php
 COPY templates/production.php.tmpl /etc/gomplate/production.php.tmpl
 COPY variants/frankenphp/init/10-wordpress-php.sh /tests/frankenphp-init.sh
 COPY variants/frankenphp/init/00-presets.sh /tests/frankenphp-presets.sh
-RUN chmod +x /usr/local/bin/wordpress-entrypoint.sh /usr/local/bin/wp /init
+RUN chmod +x /usr/local/bin/wordpress-entrypoint.sh /usr/local/bin/wp /init /tests/frankenphp-entrypoint.sh /usr/local/bin/inrage-entrypoint.sh
 
 USER inr
 ENTRYPOINT ["/usr/local/bin/wordpress-entrypoint.sh"]

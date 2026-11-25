@@ -28,9 +28,92 @@ if (defined('WP_CLI') && WP_CLI) {
                     }
                 }
 
-                return;
+                break;
             }
         }
+
+        if (
+            !defined('WP_CACHE') || !WP_CACHE
+            || !function_exists('rocket_valid_key') || !rocket_valid_key()
+            || !apply_filters('rocket_generate_advanced_cache_file', true)
+        ) {
+            return;
+        }
+
+        if (defined('WP_ROCKET_CACHE_PATH') && !is_dir(WP_ROCKET_CACHE_PATH) && function_exists('rocket_init_cache_dir')) {
+            rocket_init_cache_dir();
+            clearstatcache(true, WP_ROCKET_CACHE_PATH);
+
+            if (!is_dir(WP_ROCKET_CACHE_PATH)) {
+                WP_CLI::error('Could not generate WP Rocket cache directory.');
+            }
+        }
+
+        $advanced_cache = WP_CONTENT_DIR . '/advanced-cache.php';
+
+        if (
+            !file_exists($advanced_cache) && !is_link($advanced_cache)
+            && function_exists('rocket_generate_advanced_cache_file')
+        ) {
+            rocket_generate_advanced_cache_file();
+            clearstatcache(true, $advanced_cache);
+
+            if (!is_readable($advanced_cache) || 0 === filesize($advanced_cache)) {
+                WP_CLI::error('Could not generate WP Rocket advanced cache.');
+            }
+        }
+
+        if (
+            !is_file('/etc/s6-overlay/s6-rc.d/apache/run')
+            || !function_exists('flush_rocket_htaccess')
+            || apply_filters('rocket_disable_htaccess', false)
+        ) {
+            return;
+        }
+
+        if (!function_exists('get_home_path')) {
+            require_once ABSPATH . 'wp-admin/includes/file.php';
+        }
+
+        $is_apache = $GLOBALS['is_apache'];
+        $had_script_filename = array_key_exists('SCRIPT_FILENAME', $_SERVER);
+        $script_filename = $_SERVER['SCRIPT_FILENAME'] ?? null;
+
+        try {
+            $_SERVER['SCRIPT_FILENAME'] = ABSPATH;
+            $htaccess = get_home_path() . '.htaccess';
+            $exists = file_exists($htaccess);
+
+            if (
+                is_link($htaccess)
+                || ($exists && (!is_file($htaccess) || !is_readable($htaccess) || !is_writable($htaccess)))
+                || (!$exists && !is_writable(dirname($htaccess)))
+            ) {
+                return;
+            }
+
+            $contents = $exists ? file_get_contents($htaccess) : '';
+
+            if (false === $contents || strpos($contents, '# BEGIN WP Rocket') !== false || strpos($contents, '# END WP Rocket') !== false) {
+                return;
+            }
+
+            $GLOBALS['is_apache'] = true;
+            flush_rocket_htaccess();
+            clearstatcache(true, $htaccess);
+
+            if (!is_readable($htaccess) || strpos(file_get_contents($htaccess), '# BEGIN WP Rocket') === false) {
+                WP_CLI::error('Could not generate WP Rocket Apache rules.');
+            }
+        } finally {
+            $GLOBALS['is_apache'] = $is_apache;
+            if ($had_script_filename) {
+                $_SERVER['SCRIPT_FILENAME'] = $script_filename;
+            } else {
+                unset($_SERVER['SCRIPT_FILENAME']);
+            }
+        }
+
     });
 }
 
