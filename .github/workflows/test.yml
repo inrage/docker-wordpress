@@ -13,3 +13,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify command and server startup
         run: ./tests/command-mode.sh
+      - name: Verify effective Apache presets
+        run: ./tests/presets.sh

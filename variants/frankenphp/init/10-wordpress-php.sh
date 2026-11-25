@@ -3,6 +3,23 @@ set -e
 
 start_object_cache() {
   if wp cli has-command 'redis enable' >/dev/null 2>&1; then
+    if [ "${SKIP_CACHE_FLUSH:-false}" = true ]; then
+      if [ ! -f "${content_dir}/object-cache.php" ]; then
+        wp eval '
+          if (defined("RedisCachePro\\Filename")) {
+              $source = dirname(constant("RedisCachePro\\Filename")) . "/stubs/object-cache.php";
+          } elseif (defined("WP_REDIS_PLUGIN_PATH")) {
+              $source = WP_REDIS_PLUGIN_PATH . "/includes/object-cache.php";
+          } else {
+              WP_CLI::error("Cannot initialize this Redis plugin without flushing its cache.");
+          }
+          if (!is_readable($source) || !copy($source, WP_CONTENT_DIR . "/object-cache.php")) {
+              WP_CLI::error("Could not install the Redis object cache drop-in.");
+          }
+        '
+      fi
+      return
+    fi
     echo "Redis object cache detected... enabling drop-in."
     wp redis enable --force >/dev/null 2>&1 || true
   else

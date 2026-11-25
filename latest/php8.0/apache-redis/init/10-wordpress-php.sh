@@ -4,7 +4,7 @@ set -e
 
 start_redis() {
   if wp redis &>/dev/null; then
-    if [[ "${WORDPRESS_COMMAND_MODE:-false}" == "true" ]]; then
+    if [[ "${WORDPRESS_COMMAND_MODE:-false}" == "true" || "${SKIP_CACHE_FLUSH:-false}" == "true" ]]; then
       if [[ ! -f "${CONTENT_DIR}/object-cache.php" ]]; then
         wp eval '
           if (defined("RedisCachePro\\Filename")) {

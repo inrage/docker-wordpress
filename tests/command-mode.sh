@@ -21,6 +21,63 @@ grep -qx 'acorn optimize' "$test_dir/server.log"
 grep -qx 'cache flush' "$test_dir/server.log"
 printf 'PASS default server initialization\n'
 
+for variant in apache frankenphp; do
+  for scenario in pro-existing community-existing pro-missing community-missing absent unknown-existing; do
+    plugin="${scenario%%-*}"
+    expected=original-drop-in
+    case "$scenario" in
+      *-missing) expected="$plugin-drop-in" ;;
+      absent) expected=absent ;;
+    esac
+    docker run --rm --network none --platform linux/amd64 --entrypoint bash \
+      -e SKIP_CACHE_FLUSH=true -e TEST_PRESERVE_CACHE=true \
+      -e "TEST_REDIS_PLUGIN=$plugin" -e "TEST_EXPECT_DROPIN=$expected" "$test_image" -ec '
+      case "$2" in
+        *-missing|absent) rm /var/www/html/wp-content/object-cache.php ;;
+      esac
+      if [ "$1" = apache ]; then
+        exec /init
+      fi
+      gomplate() { cp "$2" "$4"; }
+      export WORDPRESS_NO_CREATE_CONFIG=true
+      source /tests/frankenphp-init.sh
+      source /docker-entrypoint-init.d/20-acorn-php.sh
+      source /docker-entrypoint-init.d/99-test.sh
+      echo SERVER_STARTED
+    ' cache-test "$variant" "$scenario" > "$test_dir/skip-$variant-$scenario.log" 2>&1
+    grep -qx SERVER_STARTED "$test_dir/skip-$variant-$scenario.log"
+    printf 'PASS web cache preservation: %s %s\n' "$variant" "$scenario"
+  done
+done
+
+for scenario in preset-high normal explicit-false-high; do
+  docker run --rm --network none --platform linux/amd64 --entrypoint bash \
+    -e TEST_REDIS_PLUGIN=pro "$test_image" -ec '
+    gomplate() { cp "$2" "$4"; }
+    export WORDPRESS_NO_CREATE_CONFIG=true
+    export INRAGE_RUNTIME_ENV="$(mktemp)"
+    case "$1" in
+      preset-high) export WP_SCALE=high ;;
+      explicit-false-high) export WP_SCALE=high SKIP_CACHE_FLUSH=false ;;
+    esac
+    ( . /tests/frankenphp-presets.sh )
+    . "$INRAGE_RUNTIME_ENV"
+    . /tests/frankenphp-init.sh
+    . /docker-entrypoint-init.d/20-acorn-php.sh
+    if [ "$1" = preset-high ]; then
+      export TEST_PRESERVE_CACHE=true TEST_EXPECT_DROPIN=original-drop-in
+      . /docker-entrypoint-init.d/99-test.sh
+    else
+      test "$(cat /var/www/html/wp-content/object-cache.php)" = replaced-drop-in
+      test ! -e /tmp/cache-sentinel
+      test ! -e /tmp/transient-sentinel
+    fi
+    echo PRESET_VERIFIED
+  ' test "$scenario" > "$test_dir/frankenphp-preset-$scenario.log" 2>&1
+  grep -qx PRESET_VERIFIED "$test_dir/frankenphp-preset-$scenario.log"
+  printf 'PASS FrankenPHP cache policy: %s\n' "$scenario"
+done
+
 docker run --rm --network none --platform linux/amd64 "$test_image" /init > "$test_dir/explicit-server.log"
 grep -qx 'SERVER_STARTED' "$test_dir/explicit-server.log"
 printf 'PASS explicit server initialization\n'
@@ -103,19 +160,22 @@ for scenario in ready uninstalled bootstrap-failure; do
 done
 
 for failure in bootstrap true; do
-  docker run --rm --network none --platform linux/amd64 --entrypoint sh \
+  status=0
+  docker run --rm --network none --platform linux/amd64 --entrypoint bash \
     -e "TEST_ROCKET_CONFIG_FAIL=$failure" "$test_image" -ec '
     gomplate() { cp "$2" "$4"; }
     export WORDPRESS_NO_CREATE_CONFIG=true
-    ( . /tests/frankenphp-init.sh; echo MUST_NOT_RUN ) || echo INIT_FAILED_CONTINUING
-    ! grep -qx "cli has-command redis enable" /tmp/wp-calls
-    echo WRAPPER_CONTINUED
-  ' > "$test_dir/frankenphp-wrapper-$failure.log" 2>&1
+    ( . /tests/frankenphp-init.sh; echo MUST_NOT_RUN )
+    echo TARGET_MUST_NOT_RUN
+  ' > "$test_dir/frankenphp-wrapper-$failure.log" 2>&1 || status=$?
+  if [ "$failure" = bootstrap ]; then
+    test "$status" -eq 1
+  else
+    test "$status" -eq 42
+  fi
   grep -Fq 'Could not generate WP Rocket configuration.' "$test_dir/frankenphp-wrapper-$failure.log"
-  grep -qx 'INIT_FAILED_CONTINUING' "$test_dir/frankenphp-wrapper-$failure.log"
-  grep -qx 'WRAPPER_CONTINUED' "$test_dir/frankenphp-wrapper-$failure.log"
   ! grep -q 'MUST_NOT_RUN' "$test_dir/frankenphp-wrapper-$failure.log"
-  printf 'PASS FrankenPHP wrapper preserves policy and stops failed hook: %s\n' "$failure"
+  printf 'PASS FrankenPHP initialization failure stops target: %s\n' "$failure"
 done
 
 docker run --rm --network none --platform linux/amd64 "$test_image" sh -ec '

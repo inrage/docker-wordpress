@@ -53,7 +53,7 @@ services:
     hostname: mywebsite.redis
     image: redis:7.2.0
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli --raw incr ping"]
+      test: ["CMD", "redis-cli", "ping"]
     networks:
       - internal-network
     command: redis-server --maxmemory 1024mb --maxmemory-policy allkeys-lru --appendonly yes
@@ -125,9 +125,30 @@ cronjob:
 
 Use the same database configuration and persistent WordPress content as the web service. The command's exit code and signals are preserved. This command behavior applies to the Apache variants; FrankenPHP retains its own startup sequence.
 
+## Preserving cache during web startup
+
+`SKIP_CACHE_FLUSH=true` (also selected by the Apache `WP_PRESET=high-traffic` and FrankenPHP `WP_SCALE=high` presets) prevents Redis activation from flushing Redis data or deleting SQL transients during Apache and FrankenPHP startup. An existing object-cache drop-in is kept; if missing, the native Object Cache Pro or Redis Object Cache drop-in is copied without an enable or flush command. Other Redis plugins require an existing drop-in in this mode. Normal startup with `SKIP_CACHE_FLUSH=false` still enables Redis with `--force`, allowing drop-in updates.
+
+Use this preservation mode for replicas and restarts that must retain a shared cache. Plan any required invalidation and drop-in update as a deployment operation. It does not prevent an explicit `wp cache flush`, plugin-driven invalidation or a plugin's first cache initialization.
+
+## Apache WordPress presets
+
+`WP_PRESET` is applied before WordPress initialization. The PHP templates are rendered again after the preset is loaded so that the effective configuration matches the selected profile. Explicit environment variables take precedence.
+
+| Preset | PHP memory limit | OPcache timestamp checks | OPcache memory / files | Skip cache flush |
+| --- | --- | --- | --- | --- |
+| `vitrine` (default) | `256M` | `1` | Base image defaults | `false` |
+| `vitrine-heavy` | `256M` | Base image default | Base image defaults | `false` |
+| `woocommerce` | `512M` | `1` | Base image defaults | `false` |
+| `high-traffic` | `512M` | `0` | `512` / `60000` | `true` |
+
+These presets do not size Apache or PHP-FPM automatically. Configure `APACHE_EVENT_*` and `PHP_FPM_PM_*` explicitly for the container's resources and workload. The old `APACHE_MPM_*` prefork variables are not used by the event-based Apache image. `PHP_MEMORY_LIMIT` limits a single PHP request, not the combined memory of all workers and caches.
+
+Timestamp checks can be disabled for immutable application code replaced with the container. Keep them enabled when PHP files may change in a running container. Size the worker pool using observed worker memory and concurrency, with room for Apache and shared caches; increasing every site's worker limit can increase memory pressure without improving throughput.
+
 ## WP Rocket configuration
 
-When WP Rocket is active, startup regenerates missing domain configuration files through the plugin's native API before starting the web server. The same check runs during WP-CLI startup, including the selected site in multisite. An existing complete set of readable configuration files is retained. If a file is missing, WP Rocket regenerates the current site's configuration set. Failure to create an expected file stops WP-CLI commands and Apache startup. The FrankenPHP parent image logs initialization errors and can continue starting its server; its WordPress initialization hook stops on this error, but the parent startup policy is unchanged. No WP Rocket installation or license is included in these images.
+When WP Rocket is active, startup regenerates missing domain configuration files through the plugin's native API before starting the web server. The same check runs during WP-CLI startup, including the selected site in multisite. An existing complete set of readable configuration files is retained. If a file is missing, WP Rocket regenerates the current site's configuration set. Failure to create an expected file stops WP-CLI commands and prevents Apache or FrankenPHP from starting. No WP Rocket installation or license is included in these images.
 
 The generated configuration directory must be writable by the container user when regeneration is needed. This does not replace persistent uploads or cache storage. In multisite, each site's configuration is checked when that site is loaded; startup does not enumerate the network.
 
@@ -157,7 +178,7 @@ The generated configuration directory must be writable by the container user whe
 | `WORDPRESS_NONCE_SALT`       | Nonce salt                  | `empty`            |
 | `WORDPRESS_DB_WAIT`          | Seconds to wait for WordPress at boot | `60`     |
 
-The init never blocks the container start. Without WordPress core files (e.g. a static placeholder page), or when WordPress is not installed yet (e.g. files uploaded before the database import), the WordPress setup is skipped and Apache starts. When the database is unreachable, the init retries for `WORDPRESS_DB_WAIT` seconds, then starts anyway; the mu-plugin and Redis drop-in are set up on the next start.
+Without WordPress core files (e.g. a static placeholder page), or when WordPress is not installed yet (e.g. files uploaded before the database import), the WordPress setup is skipped and Apache starts. When the database is unreachable, the init retries for `WORDPRESS_DB_WAIT` seconds, then starts anyway; the mu-plugin and Redis drop-in are set up on the next start. Configuration errors, including failure to create an expected WP Rocket configuration, prevent the web server from starting. Apache's S6 supervisors may remain running, so container process state alone is not an application readiness check.
 
 For `WORDPRESS_NO_CREATE_CONFIG`: Do not create a new configuration file (default: false)
 

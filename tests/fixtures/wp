@@ -25,9 +25,12 @@ case "$*" in
     fi
     ;;
   "cli has-command redis enable")
-    exit 1
+    test -n "${TEST_REDIS_PLUGIN:-}" && test "$TEST_REDIS_PLUGIN" != absent
     ;;
-  "redis"|"acorn"|"acorn optimize"|"acorn icons"|"acorn icons:cache"|"cache")
+  "redis")
+    test "${TEST_REDIS_PLUGIN:-}" != absent
+    ;;
+  "acorn"|"acorn optimize"|"acorn icons"|"acorn icons:cache"|"cache")
     ;;
   "redis enable --force")
     printf 'replaced-drop-in\n' > /var/www/html/wp-content/object-cache.php
@@ -35,6 +38,26 @@ case "$*" in
     ;;
   "cache flush")
     rm -f /tmp/cache-sentinel
+    ;;
+  "eval "*)
+    if [[ "$2" != *RedisCachePro* ]]; then
+      exit 91
+    fi
+    php -r '
+      define("WP_CONTENT_DIR", "/var/www/html/wp-content");
+      if ($argv[2] === "pro") {
+          define("RedisCachePro\\Filename", "/tests/redis/pro/plugin.php");
+      } elseif ($argv[2] === "community") {
+          define("WP_REDIS_PLUGIN_PATH", "/tests/redis/community");
+      }
+      class WP_CLI {
+          public static function error($message) {
+              fwrite(STDERR, $message . PHP_EOL);
+              exit(1);
+          }
+      }
+      eval($argv[1]);
+    ' "$2" "${TEST_REDIS_PLUGIN:-unknown}"
     ;;
   *)
     printf 'Unexpected wp invocation: %s\n' "$*" >&2
