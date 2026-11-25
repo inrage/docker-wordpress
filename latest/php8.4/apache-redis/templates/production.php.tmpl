@@ -1,5 +1,9 @@
 <?php
 
+if (class_exists('Roots\WPConfig\Config', false)) {
+    add_filter('rocket_set_wp_cache_constant', '__return_false', PHP_INT_MAX);
+}
+
 if (defined('WP_CLI') && WP_CLI && ! WP_CLI::get_config('url') && ! WP_CLI::get_config('blog')) {
     $wp_cli_home_url = get_option('home');
 

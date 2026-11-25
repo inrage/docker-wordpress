@@ -280,6 +280,11 @@ for scenario in unset off on; do
     /tests/wp-rocket-souin.php "$scenario" /tests/inr-wp-rocket-souin.php
 done
 
+for scenario in bedrock-web-false bedrock-web-true bedrock-cli-false bedrock-cli-true classic-web-false classic-web-true classic-cli-false classic-cli-true; do
+  docker run --rm --network none --platform linux/amd64 --entrypoint php "$test_image" \
+    /tests/wp-rocket-bedrock.php "$scenario" /tests/production.php
+done
+
 for scenario in missing custom existing readonly parent-readonly symlink opt-out failed legacy-return not-apache; do
   mounts=()
   if [ "$scenario" = not-apache ]; then

@@ -158,6 +158,8 @@ When WP Rocket is active, startup regenerates missing domain configuration files
 
 The generated configuration directory must be writable by the container user when regeneration is needed. This does not replace persistent uploads or cache storage. In multisite, each site's configuration is checked when that site is loaded; startup does not enumerate the network.
 
+On Bedrock sites using Roots WPConfig, WP Rocket cannot rewrite `WP_CACHE` in `wp-config.php`. Configure this constant through Bedrock instead. This prevents duplicate constant definitions while preserving the site's chosen cache setting; standard WordPress installations keep WP Rocket's normal behavior.
+
 ## Environment Variable
 
 ### WordPress

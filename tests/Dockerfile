@@ -23,6 +23,7 @@ COPY tests/fixtures/99-test.sh /docker-entrypoint-init.d/99-test.sh
 COPY templates/production.php.tmpl /tests/production.php
 COPY tests/wp-cli-url-context.php /tests/wp-cli-url-context.php
 COPY tests/wp-rocket-config.php /tests/wp-rocket-config.php
+COPY tests/wp-rocket-bedrock.php /tests/wp-rocket-bedrock.php
 COPY tests/wp-rocket-souin.php /tests/wp-rocket-souin.php
 COPY tests/wp-rocket-htaccess.php /tests/wp-rocket-htaccess.php
 COPY variants/frankenphp/mu-plugins/inr-wp-rocket-souin.php /tests/inr-wp-rocket-souin.php
