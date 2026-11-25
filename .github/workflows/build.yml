@@ -22,9 +22,28 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       strategy: ${{ steps.generate-jobs.outputs.strategy }}
+      publish: ${{ steps.changes.outputs.publish }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check image inputs
+        id: changes
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+        run: |
+          if [[ "$EVENT_NAME" == workflow_dispatch || "$BEFORE_SHA" =~ ^0+$ ]]; then
+            publish=true
+          else
+            changes=$(git diff --name-only "$BEFORE_SHA" "$GITHUB_SHA" -- \
+              latest beta legacy frankenphp bin init templates variants \
+              Dockerfile.template apply-templates.sh matrix.sh versions.json .php .frankenphp)
+            publish=false
+            if [[ -n "$changes" ]]; then publish=true; fi
+          fi
+          printf 'publish=%s\n' "$publish" >> "$GITHUB_OUTPUT"
       - name: Generate Matrix
         id: generate-jobs
         run: |
@@ -34,7 +53,7 @@ jobs:
   build:
     name: ${{ matrix.name }}
     needs: [generate-jobs, test]
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && needs.generate-jobs.outputs.publish == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

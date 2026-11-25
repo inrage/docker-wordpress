@@ -221,3 +221,9 @@ Refer to the [inrage/docker-php](https://github.com/inrage/docker-php) documenta
 
 - [WordPress - Roots Sage 9](/docs/roots-sage9.md)
 - [WordPress - Roots Sage 10](/docs/roots-sage10.md)
+
+## Image publication
+
+Pushes to `main` validate the repository. Images are published only when image sources, generated contexts, the build matrix, or base-image markers change. Workflow-only and documentation-only changes do not republish images or notify consumers. Use the `Build and Push Docker Images` manual workflow to intentionally rebuild unchanged inputs.
+
+The WordPress poller tracks Linux amd64 base-image manifest digests in `.php` and `.frankenphp`. It combines changed bases into one commit and publication. The initial digest baseline must be verified against the previously recorded upstream publication timestamps before enabling digest polling.

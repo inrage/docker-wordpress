@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Verify publication scope
+        run: ruby tests/publication-workflow.rb
       - name: Verify command and server startup
         run: ./tests/command-mode.sh
       - name: Verify effective Apache presets
